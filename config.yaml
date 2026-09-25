@@ -1,0 +1,51 @@
+target_clade:
+  rank: order
+  name: Carnivora
+
+paths:
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+
+sources:
+  mdd:
+    zip_url: https://raw.githubusercontent.com/mammaldiversity/mammaldiversity.github.io/master/assets/data/MDD.zip
+    species_glob: "MDD_v*_*species.csv"
+    synonym_glob: "Species_Syn_Current_v*.csv"
+  tree:
+    mcc_url: https://raw.githubusercontent.com/n8upham/MamPhy_v1/master/_DATA/MamPhy_fullPosterior_BDvr_Completed_5911sp_topoCons_NDexp_MCC_v2_target.tre
+    mcc_filename: MamPhy_fullPosterior_BDvr_Completed_5911sp_topoCons_NDexp_MCC_v2_target.tre
+    schema: nexus
+    posterior_url: https://www.googleapis.com/download/storage/v1/b/data.vertlife.org/o/mammaltree%2FCompleted_5911sp_topoCons_NDexp.zip?alt=media
+    posterior_filename: Completed_5911sp_topoCons_NDexp.zip
+
+matching:
+  fuzzy_review_threshold: 85
+  fuzzy_accept_threshold: 92
+  fuzzy_min_margin: 3
+
+wikipedia:
+  api_url: https://en.wikipedia.org/w/api.php
+  wikidata_api_url: https://www.wikidata.org/w/api.php
+  user_agent: "lineage-or-charisma/0.1 (https://github.com/jadencutinha/phylotext-mammals; Princeton COS398 research)"
+  min_interval_seconds: 0.5
+  max_retries: 5
+  backoff_seconds: 2.0
+  timeout_seconds: 30
+  description_headings:
+    - description
+    - physical description
+    - physical characteristics
+    - characteristics
+    - appearance
+    - anatomy and morphology
+    - anatomy
+    - morphology
+
+sanity_check:
+  groups:
+    big_cats: {rank: genus, name: Panthera}
+    canids: {rank: family, name: Canidae}
+    felids: {rank: family, name: Felidae}
+    pinnipeds_phocids: {rank: family, name: Phocidae}
+  example_species: [Panthera leo, Canis lupus, Ursus arctos]

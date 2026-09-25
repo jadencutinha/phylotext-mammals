@@ -1,0 +1,345 @@
+{
+ "entities": {
+  "Q1099316": {
+   "id": "Q1099316",
+   "claims": {
+    "P225": [],
+    "P105": []
+   },
+   "sitelinks": {
+    "enwiki": {
+     "site": "enwiki",
+     "title": "Jaguar (disambiguation)",
+     "badges": []
+    }
+   }
+  },
+  "Q146": {
+   "id": "Q146",
+   "claims": {
+    "P225": [],
+    "P105": []
+   },
+   "sitelinks": {
+    "enwiki": {
+     "site": "enwiki",
+     "title": "Cat",
+     "badges": [
+      "Q17437798"
+     ]
+    }
+   }
+  },
+  "Q192233": {
+   "id": "Q192233",
+   "claims": {
+    "P225": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P225",
+       "hash": "a00f7dea0408a523ab7604afcfe1a3bd22d3cd7d",
+       "datavalue": {
+        "value": "Pardofelis temminckii",
+        "type": "string"
+       },
+       "datatype": "string"
+      },
+      "type": "statement",
+      "id": "q192233$16731953-F211-44D4-A4F5-DAC97CF19E5C",
+      "rank": "normal"
+     }
+    ],
+    "P105": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P105",
+       "hash": "aebf3611b23ed90c7c0fc80f6cd1cb7be110ea59",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 7432,
+         "id": "Q7432"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "type": "statement",
+      "id": "q192233$CBCFCC7B-CC41-45EB-912D-4CA993CEBF1F",
+      "rank": "normal"
+     }
+    ]
+   },
+   "sitelinks": {
+    "enwiki": {
+     "site": "enwiki",
+     "title": "Asian golden cat",
+     "badges": []
+    }
+   }
+  },
+  "Q20744349": {
+   "id": "Q20744349",
+   "claims": {
+    "P225": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P225",
+       "hash": "0e86eeb12046d0169e60047bd3a195a87362e932",
+       "datavalue": {
+        "value": "Canis anthus",
+        "type": "string"
+       },
+       "datatype": "string"
+      },
+      "type": "statement",
+      "id": "Q20744349$330791f9-4302-effa-576a-6b3e2d915a0f",
+      "rank": "normal"
+     }
+    ],
+    "P105": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P105",
+       "hash": "aebf3611b23ed90c7c0fc80f6cd1cb7be110ea59",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 7432,
+         "id": "Q7432"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "type": "statement",
+      "id": "Q20744349$e4a778cb-46ff-4205-7bfc-052281ea9da5",
+      "rank": "normal"
+     }
+    ]
+   },
+   "sitelinks": {
+    "enwiki": {
+     "site": "enwiki",
+     "title": "African wolf",
+     "badges": []
+    }
+   }
+  },
+  "Q20980826": {
+   "id": "Q20980826",
+   "claims": {
+    "P225": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P225",
+       "hash": "3bd241a1333a13888d6b77ae409382f8adead564",
+       "datavalue": {
+        "value": "Felis catus",
+        "type": "string"
+       },
+       "datatype": "string"
+      },
+      "type": "statement",
+      "id": "Q20980826$05f4e53e-493e-808c-684c-98a85c7de8f2",
+      "rank": "normal"
+     }
+    ],
+    "P105": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P105",
+       "hash": "aebf3611b23ed90c7c0fc80f6cd1cb7be110ea59",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 7432,
+         "id": "Q7432"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "type": "statement",
+      "id": "Q20980826$b6c8770f-4bf3-6b08-68c3-94b549c10c4f",
+      "rank": "normal"
+     }
+    ]
+   },
+   "sitelinks": {
+    "enwiki": {
+     "site": "enwiki",
+     "title": "Felis catus",
+     "badges": [
+      "Q70894304"
+     ]
+    }
+   }
+  },
+  "Q210314": {
+   "id": "Q210314",
+   "claims": {
+    "P225": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P225",
+       "hash": "123697a071390ad435efc08a0c1b6b34d789d59b",
+       "datavalue": {
+        "value": "Leopardus colocolo",
+        "type": "string"
+       },
+       "datatype": "string"
+      },
+      "type": "statement",
+      "id": "q210314$4449AD23-9861-4FFD-82F9-730CF9283586",
+      "rank": "deprecated"
+     },
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P225",
+       "hash": "d6df52dce33f7c66a6492010afdb986aeaf2ec7f",
+       "datavalue": {
+        "value": "Leopardus colocola",
+        "type": "string"
+       },
+       "datatype": "string"
+      },
+      "type": "statement",
+      "id": "Q210314$45002B8E-730D-4910-9EEF-1B931CFF037E",
+      "rank": "normal"
+     }
+    ],
+    "P105": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P105",
+       "hash": "aebf3611b23ed90c7c0fc80f6cd1cb7be110ea59",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 7432,
+         "id": "Q7432"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "type": "statement",
+      "id": "Q210314$4A43BCFC-BD20-42A2-8978-01792A9002E5",
+      "rank": "normal"
+     }
+    ]
+   },
+   "sitelinks": {
+    "enwiki": {
+     "site": "enwiki",
+     "title": "Pampas cat",
+     "badges": []
+    }
+   }
+  },
+  "Q23772769": {
+   "id": "Q23772769",
+   "claims": {
+    "P225": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P225",
+       "hash": "e03b636e3c401ad70db396f5f73f37551b53016e",
+       "datavalue": {
+        "value": "Catopuma temminckii",
+        "type": "string"
+       },
+       "datatype": "string"
+      },
+      "type": "statement",
+      "id": "Q23772769$5701361d-4c9d-201c-9e0b-36b493385e1b",
+      "rank": "normal"
+     }
+    ],
+    "P105": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P105",
+       "hash": "aebf3611b23ed90c7c0fc80f6cd1cb7be110ea59",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 7432,
+         "id": "Q7432"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "type": "statement",
+      "id": "Q23772769$cabc2595-4497-8001-c6a8-06f653d3feb4",
+      "rank": "normal"
+     }
+    ]
+   },
+   "sitelinks": {}
+  },
+  "Q96575311": {
+   "id": "Q96575311",
+   "claims": {
+    "P225": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P225",
+       "hash": "19d7fa6314c8ecd7671524d8813db67f5e2ecd05",
+       "datavalue": {
+        "value": "Leopardus garleppi",
+        "type": "string"
+       },
+       "datatype": "string"
+      },
+      "type": "statement",
+      "id": "Q96575311$365ab2da-49f1-a249-4d30-c019a2c7ca91",
+      "rank": "normal"
+     }
+    ],
+    "P105": [
+     {
+      "mainsnak": {
+       "snaktype": "value",
+       "property": "P105",
+       "hash": "aebf3611b23ed90c7c0fc80f6cd1cb7be110ea59",
+       "datavalue": {
+        "value": {
+         "entity-type": "item",
+         "numeric-id": 7432,
+         "id": "Q7432"
+        },
+        "type": "wikibase-entityid"
+       },
+       "datatype": "wikibase-item"
+      },
+      "type": "statement",
+      "id": "Q96575311$b759537c-41c6-e506-ba73-82818fce9153",
+      "rank": "normal"
+     }
+    ]
+   },
+   "sitelinks": {
+    "enwiki": {
+     "site": "enwiki",
+     "title": "Garlepp's pampas cat",
+     "badges": []
+    }
+   }
+  }
+ }
+}

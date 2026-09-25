@@ -1,0 +1,94 @@
+{
+ "batchcomplete": true,
+ "query": {
+  "normalized": [
+   {
+    "fromencoded": false,
+    "from": "felis catus",
+    "to": "Felis catus"
+   }
+  ],
+  "redirects": [
+   {
+    "from": "Felis catus",
+    "to": "Cat"
+   },
+   {
+    "from": "Catopuma temminckii",
+    "to": "Asian golden cat"
+   },
+   {
+    "from": "Canis anthus",
+    "to": "African wolf"
+   },
+   {
+    "from": "Leopardus colocola",
+    "to": "Pampas cat"
+   },
+   {
+    "from": "Canis lupaster",
+    "to": "African wolf"
+   },
+   {
+    "from": "Leopardus garleppi",
+    "to": "Garlepp's pampas cat"
+   }
+  ],
+  "pages": [
+   {
+    "ns": 0,
+    "title": "Zzyzx nonexistens",
+    "missing": true
+   },
+   {
+    "pageid": 6678,
+    "ns": 0,
+    "title": "Cat",
+    "pageprops": {
+     "wikibase_item": "Q146"
+    }
+   },
+   {
+    "pageid": 273779,
+    "ns": 0,
+    "title": "Asian golden cat",
+    "pageprops": {
+     "wikibase_item": "Q192233"
+    }
+   },
+   {
+    "pageid": 883029,
+    "ns": 0,
+    "title": "Jaguar (disambiguation)",
+    "pageprops": {
+     "disambiguation": "",
+     "wikibase_item": "Q1099316"
+    }
+   },
+   {
+    "pageid": 9627444,
+    "ns": 0,
+    "title": "Pampas cat",
+    "pageprops": {
+     "wikibase_item": "Q210314"
+    }
+   },
+   {
+    "pageid": 47398884,
+    "ns": 0,
+    "title": "African wolf",
+    "pageprops": {
+     "wikibase_item": "Q20744349"
+    }
+   },
+   {
+    "pageid": 68623787,
+    "ns": 0,
+    "title": "Garlepp's pampas cat",
+    "pageprops": {
+     "wikibase_item": "Q96575311"
+    }
+   }
+  ]
+ }
+}
