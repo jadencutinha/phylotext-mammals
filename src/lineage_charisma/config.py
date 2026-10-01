@@ -88,6 +88,49 @@ class Config:
         p.mkdir(parents=True, exist_ok=True)
         return p
 
+    def pruned_tree_path(self) -> Path:
+        return self.interim / "tree_pruned_mdd_names.nwk"
+
+    def stub_species_path(self) -> Path:
+        return self.interim / "stub_species.csv"
+
+    def corpus_path(self) -> Path:
+        return self.processed / "corpus.parquet"
+
+    def embeddings_dir(self) -> Path:
+        p = self.processed / "embeddings"
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+
+    def matrices_dir(self, min_tokens: int | None = None) -> Path:
+        p = self.processed / ("matrices" if min_tokens is None else f"matrices_min{int(min_tokens)}")
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+
+    def species_order_path(self, min_tokens: int | None = None) -> Path:
+        return self.matrices_dir(min_tokens) / "species_order.txt"
+
+    def mask_terms_path(self) -> Path:
+        return self.interim / "mask_terms.csv"
+
+    @property
+    def mask_levels(self) -> list[str]:
+        return list((self.data.get("masking") or {}).get("levels") or ["none"])
+
+    def combos(self) -> list[tuple[str, str, str]]:
+        """Every (model, rule, mask level); the first is the primary combination."""
+        emb = self.data["embedding"]
+        return [(m, r, k) for k in self.mask_levels for m in emb["models"] for r in emb["rules"]]
+
+    @property
+    def reports(self) -> Path:
+        return self.path("reports")
+
+    def figures_dir(self) -> Path:
+        p = self.reports / "figures"
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+
 
 def load_config(path: str | os.PathLike | None = None) -> Config:
     cfg_path = Path(path) if path else Path(os.environ.get("LC_CONFIG", DEFAULT_CONFIG))

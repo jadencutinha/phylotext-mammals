@@ -6,6 +6,7 @@ paths:
   raw: data/raw
   interim: data/interim
   processed: data/processed
+  reports: reports
 
 sources:
   mdd:
@@ -49,3 +50,63 @@ sanity_check:
     felids: {rank: family, name: Felidae}
     pinnipeds_phocids: {rank: family, name: Phocidae}
   example_species: [Panthera leo, Canis lupus, Ursus arctos]
+
+corpus:
+  min_tokens: 50                 # below this a species is flagged is_stub; counted on the unmasked text
+  tokenizer: BAAI/bge-large-en-v1.5   # tokenizer used for n_tokens (special tokens not counted)
+
+masking:
+  levels: [taxonomy, none, strict]   # first entry is the primary level
+  token: "[TAXON]"
+  # scientific names that MDD's order/suborder/family/subfamily/genus columns do not supply
+  extra_taxonomy_terms:
+    - carnivoran
+    - Pinnipedia
+    - pinniped
+    - Arctoidea
+    - arctoid
+    - Musteloidea
+    - musteloid
+    - Feloidea
+    - feloid
+    - Canoidea
+    - canoid
+    - Nandinioidea
+    - Arctocephalinae
+    - Mungotinae
+    - Vulpini
+    - Canini
+    - Lutrini
+  keep_terms: [canines, iceland]     # never masked: "canines" is almost always teeth; Iceland is a place
+  keep_when_followed_by:
+    canine: [tooth, teeth, tip]      # "canine teeth" stays; "a canine native to ..." is masked
+
+embedding:
+  models:                        # first entry is the primary model; add a line to add a model
+    - BAAI/bge-large-en-v1.5
+    - sentence-transformers/all-mpnet-base-v2
+  rules: [chunk, truncate]       # first entry is the primary rule
+  max_tokens: null               # per-passage limit incl. special tokens; null = the model's own max_seq_length
+  chunk_overlap: 32              # tokens shared by consecutive chunks
+  batch_size: 16
+  device: auto                   # auto | cuda | mps | cpu
+
+matrices:
+  exclude_stubs: true            # drops is_stub species (n_tokens < corpus.min_tokens) from every matrix and species_order.txt
+  sensitivity_min_tokens: 100    # used only by `07_build_matrices.py --sensitivity`, which writes matrices_min100/
+
+week3_sanity:
+  showcase_species:
+    - Panthera leo
+    - Panthera tigris
+    - Panthera pardus
+    - Canis lupus
+    - Vulpes vulpes
+    - Ursus maritimus
+    - Ursus arctos
+    - Ailuropoda melanoleuca
+    - Suricata suricatta
+    - Enhydra lutris
+  k_neighbors: 5
+  near_neighbor_quantile: 0.05   # "near" = closer than this quantile of all pairwise text distances
+  min_family_size: 2

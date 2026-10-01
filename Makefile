@@ -2,9 +2,13 @@ PYTHON ?= .venv/bin/python
 FORCE ?=
 ARGS = $(if $(FORCE),--force,)
 
-.PHONY: all setup mdd tree reconcile prune wiki test posterior clean-interim clean
+.PHONY: all week2 week3 setup mdd tree reconcile prune wiki corpus embed matrices matrices-sensitivity sanity test posterior clean-interim clean
 
-all: mdd tree reconcile prune wiki
+all: week2 week3
+
+week2: mdd tree reconcile prune wiki
+
+week3: corpus embed matrices sanity
 
 setup:
 	python3 -m venv .venv
@@ -25,6 +29,21 @@ prune: reconcile
 
 wiki: reconcile
 	$(PYTHON) scripts/05_fetch_wikipedia.py $(ARGS)
+
+corpus: wiki
+	$(PYTHON) scripts/05b_build_corpus.py $(ARGS)
+
+embed: corpus
+	$(PYTHON) scripts/06_embed.py $(ARGS)
+
+matrices: embed prune
+	$(PYTHON) scripts/07_build_matrices.py $(ARGS)
+
+matrices-sensitivity: embed prune
+	$(PYTHON) scripts/07_build_matrices.py --sensitivity $(ARGS)
+
+sanity: matrices
+	$(PYTHON) scripts/08_sanity_report.py
 
 posterior:
 	$(PYTHON) scripts/02_fetch_tree.py --posterior
