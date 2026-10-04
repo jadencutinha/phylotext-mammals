@@ -54,7 +54,7 @@ Stubs are flagged and still embedded. `matrices.exclude_stubs: true` (the curren
 
 ### Name masking (stage 5b)
 
-`masking.levels` in `config.yaml` lists the mask levels to build; the first is the primary one (currently `taxonomy`). Every level is embedded and gets its own matrices.
+`masking.levels` in `config.yaml` lists the mask levels to build; the first is the primary one (currently `strict`). Every level is embedded and gets its own matrices.
 
 - **`none`**: the cleaned text as fetched.
 - **`taxonomy`**: scientific names are replaced by `masking.token` (`[TAXON]`). The vocabulary is built from the MDD tables for the whole target clade, not just the species being described:
