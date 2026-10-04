@@ -107,4 +107,20 @@ A fourth pairwise quantity, the mean log pageviews of the two species, is built 
 
 ## 9. Amendments
 
-None.
+### Amendment 1 (2026-10-04, before any results)
+
+Made after review of the first version and before any Mantel test or text–phylogeny correlation was computed. Sections 1 to 8 are left as first committed; where an item below conflicts with them, the amendment holds.
+
+**A1.1 Unweighted Gower as an ecology robustness variant (adds to section 7).** Equal weighting by trait group stays the primary ecological distance. A second ecology matrix is built with every column weighted equally (each diet column, each activity flag, each terrestrial or aquatic flag, and every other trait counts once). It is a declared robustness variant: every analysis that uses ecological distance is repeated with it and both are reported, and the group-weighted matrix alone is used for the H2 conclusion.
+
+**A1.2 Same species for raw and partial correlations in H2 (adds to section 7).** Species without trait data are still dropped only from analyses that use ecology, and H1 still uses all 284. For H2, the raw text–phylogeny Mantel test is recomputed on the same trait-complete species subset that the partial tests use. Any difference between the raw and the partial correlation then reflects the controls and not a change in species. The 284-species H1 result and the subset result are both reported.
+
+**A1.3 Posterior trees as a robustness analysis (replaces the second bullet of section 8).** Uncertainty in the tree is examined by repeating the primary-specification H1 test on 100 trees from the 10,000-tree posterior of Upham et al. (2019) (`Completed_5911sp_topoCons_NDexp.zip`, the posterior the MCC tree summarises).
+
+- **Selection**: the posterior trees are indexed 0 to N − 1 in the archive's order (files sorted by name, trees in file order). 100 indices are drawn without replacement with `numpy.random.default_rng(20261004).choice(N, size=100, replace=False)`. The seed is the same as `stats.seed`.
+- **Per tree**: the tree is pruned to the 284 species with the existing reconciliation, patristic distances are computed, and the Spearman Mantel test is run against the primary text matrix with 9,999 permutations and seed 20261004.
+- **Reporting**: the distribution of r over the 100 trees (median, 2.5th and 97.5th percentiles, minimum, maximum) next to the MCC-tree r, and the share of trees with p < 0.05.
+- **Role**: robustness only. H1 is decided by the MCC tree under the primary specification, as in section 4.
+- **Timing**: this is not one of the Week 4 deliverables. The posterior has not been downloaded, and nothing in this amendment depends on having seen it.
+
+The 277-species `matrices_min100/` set stays exploratory.
