@@ -1,0 +1,17 @@
+x,y,role,method,r,p,n_species,n_pairs
+phylogeny,ecology,predictor overlap,spearman,0.08066821398233492,0.0001,283,39903
+phylogeny,ecology_unweighted,predictor overlap,spearman,0.07031599014220341,0.0001,283,39903
+phylogeny,attention_pageviews,predictor overlap,spearman,0.10515194189627816,0.0001,284,40186
+phylogeny,attention_length,predictor overlap,spearman,0.049001610819525976,0.0001,284,40186
+phylogeny,attention_combined,predictor overlap,spearman,0.08154607319652367,0.0001,284,40186
+ecology,attention_pageviews,predictor overlap,spearman,0.023598613740804013,0.269,283,39903
+ecology,attention_length,predictor overlap,spearman,0.026732785241403476,0.2415,283,39903
+ecology,attention_combined,predictor overlap,spearman,0.02758186984087904,0.2271,283,39903
+ecology_unweighted,attention_pageviews,predictor overlap,spearman,0.004313553097230772,0.8281,283,39903
+ecology_unweighted,attention_length,predictor overlap,spearman,0.0160607055330887,0.4522,283,39903
+ecology_unweighted,attention_combined,predictor overlap,spearman,0.009937740211664565,0.6368,283,39903
+text,ecology,text against predictor,spearman,0.13828611301600646,0.0002,283,39903
+text,ecology_unweighted,text against predictor,spearman,0.14397365865490874,0.0001,283,39903
+text,attention_pageviews,text against predictor,spearman,-0.022605493644406713,0.4003,284,40186
+text,attention_length,text against predictor,spearman,0.08829953791509762,0.0012,284,40186
+text,attention_combined,text against predictor,spearman,0.04904860041068977,0.0774,284,40186

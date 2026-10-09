@@ -2,14 +2,9 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-import matplotlib
-
-matplotlib.use("Agg")
-import matplotlib.patheffects as pe
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from matplotlib.colors import LinearSegmentedColormap, LogNorm
+from matplotlib.colors import LogNorm
 
 from lineage_charisma.config import base_parser, load_config
 from lineage_charisma.corpus import length_summary, read_corpus
@@ -18,6 +13,7 @@ from lineage_charisma.embed import embedding_paths, load_embeddings, model_slug
 from lineage_charisma.io_utils import atomic_write_text, read_csv, read_json
 from lineage_charisma.masking import MASK_LEVELS, leak_counts, text_column
 from lineage_charisma.phylo import load_tree
+from lineage_charisma.plotstyle import AXIS, BLUE, BLUE_RAMP, HALO, INK, INK_2, MASK_COLORS, MASK_NAMES, MEDIAN_LINE, ORANGE, ORANGE_RAMP, SURFACE, apply_style, combo_label, plt, save
 from lineage_charisma.sanity import (
     binned_median,
     family_table,
@@ -31,54 +27,13 @@ from lineage_charisma.sanity import (
     spearman,
 )
 
-SURFACE, INK, INK_2, MUTED, GRID, AXIS = "#fcfcfb", "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7"
-BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"
-MASK_COLORS = {"none": BLUE, "taxonomy": ORANGE, "strict": AQUA}
-MASK_NAMES = {"none": "no masking", "taxonomy": "taxonomy masked", "strict": "strict (taxonomy and common names masked)"}
-BLUE_RAMP = LinearSegmentedColormap.from_list("blue_seq", ["#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"])
-ORANGE_RAMP = LinearSegmentedColormap.from_list("orange_seq", ["#fde3d6", "#f7b79b", "#f08a5f", "#eb6834", "#c04f22", "#8f3815", "#5e230b"])
 
-plt.rcParams.update({
-    "font.family": "sans-serif",
-    "font.sans-serif": ["Helvetica Neue", "Helvetica", "Arial", "DejaVu Sans"],
-    "font.size": 9,
-    "figure.facecolor": SURFACE,
-    "axes.facecolor": SURFACE,
-    "savefig.facecolor": SURFACE,
-    "text.color": INK,
-    "axes.labelcolor": INK_2,
-    "axes.edgecolor": AXIS,
-    "axes.linewidth": 0.8,
-    "axes.titlesize": 10,
-    "axes.titleweight": "bold",
-    "axes.titlelocation": "left",
-    "axes.spines.top": False,
-    "axes.spines.right": False,
-    "xtick.color": MUTED,
-    "ytick.color": MUTED,
-    "xtick.labelcolor": INK_2,
-    "ytick.labelcolor": INK_2,
-    "grid.color": GRID,
-    "grid.linewidth": 0.6,
-    "legend.frameon": False,
-})
-
-
-HALO = [pe.withStroke(linewidth=2.5, foreground=SURFACE)]
-MEDIAN_LINE = dict(color=INK, linewidth=1.6, marker="o", markersize=5, markeredgecolor=SURFACE, markeredgewidth=1.2)
-
-
-def combo_label(model: str, rule: str, mask: str | None = None) -> str:
-    return f"{model.split('/')[-1]} / {rule}" + (f" / {mask}" if mask else "")
+# every figure this script writes starts with one of these; only they are cleared before a rebuild
+FIGURE_PREFIXES = ("heatmaps", "text_vs_phylo", "family_within_between", "length_vs_neighbors", "family_ratio_by_mask")
 
 
 def combo_slug(model: str, rule: str, mask: str | None = None) -> str:
     return f"{model_slug(model)}__{rule}" + (f"__{mask}" if mask else "")
-
-
-def save(fig, path) -> None:
-    fig.savefig(path, dpi=200, bbox_inches="tight")
-    plt.close(fig)
 
 
 def family_blocks(families: list[str]) -> list[tuple[str, int, int]]:
@@ -219,6 +174,7 @@ def md_table(frame: pd.DataFrame, decimals: int = 3) -> str:
 def main() -> None:
     args = base_parser("Week 3 sanity report: nearest neighbours, family structure, mask levels, and figures.").parse_args()
     cfg = load_config(args.config)
+    apply_style()
     ecfg, scfg = cfg["embedding"], cfg["week3_sanity"]
     k, quantile = scfg["k_neighbors"], scfg["near_neighbor_quantile"]
     combos = cfg.combos()
@@ -227,8 +183,9 @@ def main() -> None:
     model_rules = [(m, r) for m in ecfg["models"] for r in ecfg["rules"]]
     masks = [level for level in MASK_LEVELS if level in cfg.mask_levels]
     fig_dir, report_path = cfg.figures_dir(), cfg.reports / "week3_sanity.md"
-    for stale in fig_dir.glob("*.png"):
-        stale.unlink()
+    for prefix in FIGURE_PREFIXES:
+        for stale in fig_dir.glob(f"{prefix}__*.png"):
+            stale.unlink()
 
     order_path = cfg.species_order_path()
     phylo, order = load_matrix(phylo_matrix_path(cfg.matrices_dir()), order_path)

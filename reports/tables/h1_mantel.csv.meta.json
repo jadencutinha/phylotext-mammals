@@ -1,0 +1,21 @@
+{
+  "file": "h1_mantel.csv",
+  "sha256": "25d9fd4c1f7b315e2d0cf229875ad4d9a0180dce9fc124db705b4a6787c87c24",
+  "bytes": 2274,
+  "created_utc": "2026-10-04T22:45:32+00:00",
+  "rows": 24,
+  "columns": [
+    "model",
+    "rule",
+    "mask",
+    "method",
+    "r",
+    "p",
+    "n_pairs",
+    "is_primary"
+  ],
+  "permutations": 9999,
+  "seed": 20261004,
+  "alternative": "greater",
+  "n_species": 284
+}

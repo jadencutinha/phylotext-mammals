@@ -1,0 +1,27 @@
+{
+  "file": "h1_posterior.csv",
+  "sha256": "940c1d7890f8285c365624877fc7e787ed112fdbd85910fc1831d1be68eafe15",
+  "bytes": 14498,
+  "created_utc": "2026-10-08T01:09:33+00:00",
+  "rows": 100,
+  "columns": [
+    "draw",
+    "tree_index",
+    "tree_file",
+    "method",
+    "r",
+    "p",
+    "n_pairs",
+    "max_distance_my",
+    "spearman_with_mcc"
+  ],
+  "permutations": 9999,
+  "seed": 20261004,
+  "selection_seed": 20261004,
+  "n_trees": 100,
+  "alternative": "greater",
+  "archive": "Completed_5911sp_topoCons_NDexp.zip",
+  "text_matrix": "bge-large-en-v1.5 / chunk / strict",
+  "mcc_r": 0.03270586227481519,
+  "mcc_p": 0.0285
+}

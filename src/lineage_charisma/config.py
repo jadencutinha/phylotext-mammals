@@ -131,6 +131,21 @@ class Config:
         p.mkdir(parents=True, exist_ok=True)
         return p
 
+    def week4_figures_dir(self) -> Path:
+        # a subdirectory, because scripts/08_sanity_report.py clears reports/figures/*.png on every run
+        p = self.reports / "figures" / "week4"
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+
+    def tables_dir(self) -> Path:
+        p = self.reports / "tables"
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+
+    @property
+    def primary_combo(self) -> tuple[str, str, str]:
+        return self.combos()[0]
+
 
 def load_config(path: str | os.PathLike | None = None) -> Config:
     cfg_path = Path(path) if path else Path(os.environ.get("LC_CONFIG", DEFAULT_CONFIG))

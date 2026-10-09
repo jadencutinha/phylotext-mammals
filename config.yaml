@@ -19,6 +19,14 @@ sources:
     schema: nexus
     posterior_url: https://www.googleapis.com/download/storage/v1/b/data.vertlife.org/o/mammaltree%2FCompleted_5911sp_topoCons_NDexp.zip?alt=media
     posterior_filename: Completed_5911sp_topoCons_NDexp.zip
+  elton_traits:                  # EltonTraits 1.0 mammals, Wilman et al. 2014, doi:10.6084/m9.figshare.3559887
+    url: https://ndownloader.figshare.com/files/5631084
+    filename: MamFuncDat.txt
+    md5: 59c3eee29d3ed0a33a002975a5a8cc75
+  combine:                       # COMBINE reported (not imputed) traits, Soria et al. 2021, doi:10.6084/m9.figshare.13028255
+    url: https://ndownloader.figshare.com/files/27703263
+    filename: trait_data_reported.csv
+    md5: d894586c3858620723b1182d8b491d3e
 
 matching:
   fuzzy_review_threshold: 85
@@ -56,7 +64,7 @@ corpus:
   tokenizer: BAAI/bge-large-en-v1.5   # tokenizer used for n_tokens (special tokens not counted)
 
 masking:
-  levels: [taxonomy, none, strict]   # first entry is the primary level
+  levels: [strict, taxonomy, none]   # first entry is the primary level
   token: "[TAXON]"
   # scientific names that MDD's order/suborder/family/subfamily/genus columns do not supply
   extra_taxonomy_terms:
@@ -94,6 +102,33 @@ embedding:
 matrices:
   exclude_stubs: true            # drops is_stub species (n_tokens < corpus.min_tokens) from every matrix and species_order.txt
   sensitivity_min_tokens: 100    # used only by `07_build_matrices.py --sensitivity`, which writes matrices_min100/
+
+stats:                           # fixed in docs/preregistration.md; do not change after H1 has been run
+  permutations: 9999
+  seed: 20261004                 # every Mantel test starts a fresh generator from this seed
+  method: spearman               # primary correlation; pearson is reported alongside it
+  alpha: 0.05
+
+traits:
+  max_unmatched: 5               # scripts/10_build_ecology.py stops for review above this many unreviewed species without a trait record
+  reviewed_missing:              # reviewed 2026-10-04: genuinely absent from the database, kept as missing (no imputation)
+    - Bassaricyon medius         # not in EltonTraits: split or described after MSW3
+    - Bassaricyon neblina
+    - Bdeogale omnivora
+    - Canis lupaster
+    - Canis rufus
+    - Cryptoprocta spelea        # extinct
+    - Lutra congica
+    - Neofelis diardi
+    - Felis catus                # not in COMBINE (domestic)
+
+attention:
+  pageviews_api_url: https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article
+  project: en.wikipedia
+  access: all-access
+  agent: user
+  start: "2023-01"               # first and last month of the window, inclusive
+  end: "2025-12"
 
 week3_sanity:
   showcase_species:

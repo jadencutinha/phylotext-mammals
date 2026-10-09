@@ -1,14 +1,17 @@
 PYTHON ?= .venv/bin/python
 FORCE ?=
 ARGS = $(if $(FORCE),--force,)
+ACCEPT_RESIDUAL ?=
 
-.PHONY: all week2 week3 setup mdd tree reconcile prune wiki corpus embed matrices matrices-sensitivity sanity test posterior clean-interim clean
+.PHONY: all week2 week3 week4 setup mdd tree reconcile prune wiki corpus embed matrices matrices-sensitivity sanity h1 ecology attention diagnostics report test posterior posterior-h1 clean-interim clean
 
-all: week2 week3
+all: week2 week3 week4
 
 week2: mdd tree reconcile prune wiki
 
 week3: corpus embed matrices sanity
+
+week4: h1 ecology attention diagnostics report
 
 setup:
 	python3 -m venv .venv
@@ -45,8 +48,26 @@ matrices-sensitivity: embed prune
 sanity: matrices
 	$(PYTHON) scripts/08_sanity_report.py
 
+h1: matrices
+	$(PYTHON) scripts/09_run_h1.py
+
+ecology: matrices
+	$(PYTHON) scripts/10_build_ecology.py $(ARGS) $(if $(ACCEPT_RESIDUAL),--accept-residual,)
+
+attention: matrices
+	$(PYTHON) scripts/11_build_attention.py
+
+diagnostics: ecology attention
+	$(PYTHON) scripts/12_confound_diagnostics.py
+
+report: h1 diagnostics
+	$(PYTHON) scripts/13_week4_report.py
+
 posterior:
 	$(PYTHON) scripts/02_fetch_tree.py --posterior
+
+posterior-h1: posterior matrices
+	$(PYTHON) scripts/14_posterior_h1.py
 
 test:
 	$(PYTHON) -m pytest
