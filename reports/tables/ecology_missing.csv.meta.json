@@ -1,0 +1,17 @@
+{
+  "file": "ecology_missing.csv",
+  "sha256": "0faeae002003be3ae0b36daebbc688a76b524b4c5050b25a863a4b75ea6c8930",
+  "bytes": 1499,
+  "created_utc": "2026-10-04T22:45:35+00:00",
+  "rows": 19,
+  "columns": [
+    "trait",
+    "group",
+    "type",
+    "source",
+    "source_column",
+    "n_missing",
+    "missing_rate"
+  ],
+  "n_species": 284
+}

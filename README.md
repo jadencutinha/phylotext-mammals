@@ -2,7 +2,7 @@
 
 Does text-embedding similarity between mammal species descriptions recover the evolutionary tree, or does it mainly reflect human attention and charisma? This repo compares a text-distance matrix (from Wikipedia description embeddings) with a phylogenetic-distance matrix (from the Upham et al. 2019 mammal tree) using Mantel and partial Mantel tests.
 
-**Current state: Week 3, aligned text-distance and phylogenetic-distance matrices for the pilot clade at three name-masking levels, with a descriptive sanity report in [`reports/week3_sanity.md`](reports/week3_sanity.md).** No Mantel tests, trait or attention matrices yet. The target clade is set in `config.yaml` (currently order Carnivora). No code names a clade directly, so moving to all mammals only means changing `target_clade`.
+**Current state: Week 4. The analysis is pre-registered in [`docs/preregistration.md`](docs/preregistration.md), the H1 Mantel tests have been run for all 12 variants, and the ecological and attention distance matrices are built. Results are in [`reports/week4_report.md`](reports/week4_report.md).** No partial Mantel or MRM yet (Week 5). The target clade is set in `config.yaml` (currently order Carnivora). No code names a clade directly, so moving to all mammals only means changing `target_clade`.
 
 ## Setup
 
@@ -12,10 +12,11 @@ make test           # runs the unit tests (no network needed)
 make all            # runs every stage; each stage skips work whose output is cached
 make week2          # stages 1-5 only (data foundation)
 make week3          # stages 5b-8 only (corpus, embeddings, matrices, sanity report)
+make week4          # stages 9-13 only (H1 Mantel tests, ecology, attention, diagnostics, report)
 make all FORCE=1    # rebuilds every stage, including the downloads and API pulls
 ```
 
-Python 3.11+ is required. Dependencies: requests, dendropy, rapidfuzz, pandas, pyyaml, numpy, pyarrow, sentence-transformers (which brings PyTorch), matplotlib (plus pytest for dev).
+Python 3.11+ is required. Dependencies: requests, dendropy, rapidfuzz, pandas, pyyaml, numpy, pyarrow, sentence-transformers (which brings PyTorch), matplotlib, scipy (plus pytest and scikit-bio for dev; scikit-bio is used only to cross-check the Mantel test).
 
 The first `make embed` downloads the two embedding models from the Hugging Face hub (about 1.3 GB and 0.4 GB) and the first `make corpus` downloads one tokenizer file. Both are free and need no account. Everything after that runs offline from the caches.
 
@@ -32,15 +33,22 @@ The first `make embed` downloads the two embedding models from the Hugging Face 
 | 6 | `make embed` → `scripts/06_embed.py` | `corpus.parquet`, embedding models | `data/processed/embeddings/{model_slug}__{rule}__{mask_level}.npy`, `.species.txt`, `.meta.json` |
 | 7 | `make matrices` → `scripts/07_build_matrices.py` | embeddings, `tree_pruned_mdd_names.nwk`, `corpus.parquet` | `data/processed/matrices/species_order.txt`, `phylo.npy`, `text__{model_slug}__{rule}__{mask_level}.npy` |
 | 8 | `make sanity` → `scripts/08_sanity_report.py` | matrices, `corpus.parquet`, `matched.csv` | `reports/week3_sanity.md`, `reports/figures/*.png` |
+| 9 | `make h1` → `scripts/09_run_h1.py` | text and phylogenetic matrices | `reports/tables/h1_mantel.csv`, `h1_mantel_families.csv`, `reports/figures/week4/h1_*.png` |
+| 10 | `make ecology` → `scripts/10_build_ecology.py` | EltonTraits 1.0 and COMBINE from figshare, MDD species and synonym tables | `data/raw/traits/`, `data/interim/traits_name_map.csv`, `traits_residual_review.csv`, `data/processed/traits.csv`, `matrices/ecology.npy`, `ecology_unweighted.npy`, `ecology_species.txt`, `reports/tables/ecology_missing.csv`, `docs/ecology_traits.md` |
+| 11 | `make attention` → `scripts/11_build_attention.py` | `matched.csv`, `corpus.parquet`, Wikipedia API, Wikimedia Pageviews API | `data/processed/attention.csv`, `pageviews_monthly.csv`, `matrices/attention_pageviews.npy`, `attention_length.npy`, `attention_combined.npy`, `attention_mean_log_pageviews.npy` |
+| 12 | `make diagnostics` → `scripts/12_confound_diagnostics.py` | phylogenetic, ecology, attention and primary text matrices | `reports/tables/confound_mantel.csv` |
+| 13 | `make report` → `scripts/13_week4_report.py` | the tables above, `reports/week4_notes.md` | `reports/week4_report.md` |
 
-Every script takes `--force` and `--config PATH`. Stages 3 and 5 also take `--offline`, which answers every API request from the cache and fails if a response is missing. Every CSV written gets a `.meta.json` sidecar with its sha256, row count, creation time, and source (for example, the MDD version).
+Every script takes `--force` and `--config PATH`. Stages 3, 5 and 11 also take `--offline`, which answers every API request from the cache and fails if a response is missing. Every CSV written gets a `.meta.json` sidecar with its sha256, row count, creation time, and source (for example, the MDD version).
 
-Optional: `make posterior` downloads the full 10,000-tree posterior from VertLife (`Completed_5911sp_topoCons_NDexp.zip`, about 1.2 GB) for later weeks. The tip labels are the same across the posterior, so this week's reconciliation applies to every tree in it.
+Optional: `make posterior` downloads the full 10,000-tree posterior from VertLife (`Completed_5911sp_topoCons_NDexp.zip`, about 1.2 GB) as 10,000 single-tree Newick files. Posterior tips are labelled `Genus_species`, the MCC tree's labels without the `_FAMILY_ORDER` suffix, and the two sets match one to one, so the Week 2 reconciliation applies to every tree. `make posterior-h1` (`scripts/14_posterior_h1.py`, about 8 minutes) repeats the primary H1 test on the 100 trees fixed by amendment A1.3 of the pre-registration and writes `reports/tables/h1_posterior.csv` and `reports/figures/week4/h1_posterior.png`; `make report` includes the result when that table exists. It is not part of `make week4` because of the download.
 
-### Data sources (checked 2026-09-24)
+### Data sources (MDD and tree checked 2026-09-24; trait files checked 2026-10-04)
 
 - **MDD v2.5** (released 2026-07-28): `https://raw.githubusercontent.com/mammaldiversity/mammaldiversity.github.io/master/assets/data/MDD.zip`. Stage 1 picks the highest-versioned `MDD_v*_*species.csv` and `Species_Syn_Current_v*.csv` inside the zip, so a new MDD release is picked up without code changes.
 - **Upham et al. 2019 tree**: the MCC tree of the *completed, topology-constrained, node-dated (NDexp)* posterior, from the authors' repo `n8upham/MamPhy_v1` (`MamPhy_fullPosterior_BDvr_Completed_5911sp_topoCons_NDexp_MCC_v2_target.tre`). The matching 10k posterior is on `data.vertlife.org/mammaltree/`.
+- **EltonTraits 1.0** (Wilman et al. 2014): `MamFuncDat.txt` from figshare, `https://ndownloader.figshare.com/files/5631084` (doi:10.6084/m9.figshare.3559887). The original `esapubs.org` copy is also still online.
+- **COMBINE** (Soria et al. 2021): `trait_data_reported.csv` from figshare, `https://ndownloader.figshare.com/files/27703263` (doi:10.6084/m9.figshare.13028255, version 4).
 
 ## Week 3: corpus, embeddings, and distance matrices
 
@@ -99,6 +107,36 @@ Each output is cached as `{model_slug}__{rule}__{mask_level}.npy` (float32, one 
 `reports/week3_sanity.md` covers corpus statistics and the stub list, what each mask level removes, nearest neighbours in text and phylogenetic space for the species in `week3_sanity.showcase_species`, within-family against between-family text distance, a comparison of the three mask levels on that family check, heatmaps in tree tip order, text distance against phylogenetic distance, and description length against near-neighbour count. The nearest-neighbour and family checks are repeated for every model and rule. The report is descriptive only.
 
 The report is regenerated on every run. Hand-written observations live in `reports/week3_notes.md`, which the script appends to the report unchanged; edit that file, not the report.
+
+## Week 4: pre-registration, H1, and the H2 control matrices
+
+`docs/preregistration.md` fixes the primary specification (bge-large / chunk / strict, Spearman), H1, the permutation count and seed, the robustness variants and the H2 control matrices. It was committed before any Mantel test was run. Changes go in its dated "Amendments" section. The settings it fixes are in `config.yaml` under `stats` and as the first entries of `embedding.models`, `embedding.rules` and `masking.levels`; do not change them without an amendment.
+
+### Mantel test (`src/lineage_charisma/stats.py`)
+
+`mantel(x, y, method, permutations, seed, alternative)` correlates the upper triangles of two distance matrices and builds the null distribution by reordering the rows and columns of `y` together. It returns r, the p-value, the null distribution and the number of pairs. p = (1 + permuted statistics at least as extreme as the observed one) / (1 + permutations). Spearman ranks the distances once, with average ranks for ties. The permutation loop is vectorized: 9,999 permutations of a 284 × 284 matrix take about 4 seconds. Every call starts a fresh generator from the seed, so a result does not depend on which tests ran before it. The tests check the statistic against scipy, the null against an explicit permutation loop, and r and p against scikit-bio's `mantel`.
+
+The same module has `partial_mantel(x, y, controls, ...)` and `mrm(response, predictors, ...)` for Week 5. Both reuse the vectorized permutation code and are tested on synthetic matrices against least-squares fits and explicit permutation loops. **Neither has been run on the project's data.** scikit-bio has no partial Mantel test or MRM, so there is no outside cross-check for those beyond the one-predictor case, where MRM reduces to the plain Mantel test.
+
+### H1 (stage 9)
+
+`h1_mantel.csv` has one row per model, rule, mask level and method (`model, rule, mask, method, r, p, n_pairs, is_primary`), 24 rows in all. `is_primary` marks the one row that decides H1. `h1_mantel_families.csv` repeats the primary specification inside the three largest families, as description only. Week 4 figures go in `reports/figures/week4/`, because stage 8 clears `reports/figures/*.png` on every run.
+
+### Ecological distance (stage 10)
+
+Stage 10 downloads EltonTraits 1.0 (`MamFuncDat.txt`) and COMBINE (`trait_data_reported.csv`, the reported values, not the imputed ones) from figshare and checks each file's md5 against `config.yaml`. Trait-database names are matched to MDD species with the Week 2 engine, treating each database's names as the "tips". Every match and its rule is in `traits_name_map.csv`; species with no record in a database are in `traits_residual_review.csv`. **If more than `traits.max_unmatched` (5) unmatched species have not been reviewed the stage stops** so the list can be looked at. Reviewed species are listed in `traits.reviewed_missing` in `config.yaml` (currently nine: eight absent from EltonTraits, which follows the older MSW3 taxonomy, and the domestic cat, absent from COMBINE); `make ecology ACCEPT_RESIDUAL=1` goes on without listing them.
+
+The traits are the pre-registered list in `traits.TRAITS`: ten diet percentages, foraging stratum and three activity flags from EltonTraits, and habitat breadth, three terrestrial or aquatic flags and log10 body mass from COMBINE. `docs/ecology_traits.md` is written by the stage and lists every trait with its type, weight and missing-data rate. Distance is Gower distance with the pairwise-available rule (a pair's distance is the weighted mean over the traits both species have; nothing is imputed). `ecology.npy` weights the six trait groups equally and is the primary matrix; `ecology_unweighted.npy` weights every column equally and is a robustness variant. Both follow `ecology_species.txt`, which is `species_order.txt` less any species that has no ecological distance to some other species. Load them with `load_matrix(path, ecology_species.txt)`.
+
+### Attention distance (stage 11)
+
+Stage 11 pulls monthly English Wikipedia pageviews for 2023-01 through 2025-12 (`attention` in `config.yaml`: all access methods, agent = user). The Pageviews API records views under the title a reader asked for, so the stage resolves each article's current title and sums over the article and every main-namespace redirect to it; views from before a rename are then counted. Requests carry the project User-Agent, are rate-limited, retried with backoff, and cached under `data/interim/api_cache/pageviews/`. A title with no views in the window (HTTP 404) counts as zero.
+
+`attention.csv` has, per species, the median monthly pageviews, `log_pageviews` = log(1 + median) and `log_length` = log(`n_tokens`). The matrices are `attention_pageviews.npy` and `attention_length.npy` (absolute difference of each variable), `attention_combined.npy` (Euclidean distance on the two variables standardized to mean 0 and standard deviation 1), and `attention_mean_log_pageviews.npy` (the pair's mean log pageviews, for the later "both well-known" check). The last one is not a distance and has a non-zero diagonal.
+
+### Diagnostics and report (stages 12 and 13)
+
+Stage 12 runs Spearman Mantel tests (two-sided) between phylogeny, the two ecology matrices and the three attention matrices, and between the primary text matrix and each control. These are marginal correlations; nothing is partialled. Stage 13 writes `reports/week4_report.md` from the tables and appends `reports/week4_notes.md` unchanged; edit the notes, not the report.
 
 ## Outputs of stage 3
 

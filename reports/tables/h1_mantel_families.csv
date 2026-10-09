@@ -1,0 +1,7 @@
+family,n_species,model,rule,mask,method,r,p,n_pairs
+Mustelidae,58,BAAI/bge-large-en-v1.5,chunk,strict,spearman,-0.004722099497198014,0.513,1653
+Mustelidae,58,BAAI/bge-large-en-v1.5,chunk,strict,pearson,0.06576910294316483,0.1546,1653
+Felidae,38,BAAI/bge-large-en-v1.5,chunk,strict,spearman,-0.07797266278202225,0.785,703
+Felidae,38,BAAI/bge-large-en-v1.5,chunk,strict,pearson,-0.04417955223519057,0.6908,703
+Canidae,37,BAAI/bge-large-en-v1.5,chunk,strict,spearman,0.19994069914728502,0.0033,666
+Canidae,37,BAAI/bge-large-en-v1.5,chunk,strict,pearson,0.19141599908649015,0.0049,666

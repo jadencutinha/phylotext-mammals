@@ -1,0 +1,21 @@
+{
+  "file": "confound_mantel.csv",
+  "sha256": "bdd8ef6703a44f8d4f65ab35ebcb8168a7713fc0b99615e5e4c16cd21ec980c5",
+  "bytes": 1526,
+  "created_utc": "2026-10-04T22:46:40+00:00",
+  "rows": 16,
+  "columns": [
+    "x",
+    "y",
+    "role",
+    "method",
+    "r",
+    "p",
+    "n_species",
+    "n_pairs"
+  ],
+  "permutations": 9999,
+  "seed": 20261004,
+  "alternative": "two-sided",
+  "text_matrix": "bge-large-en-v1.5 / chunk / strict"
+}
