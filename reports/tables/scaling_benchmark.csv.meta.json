@@ -1,0 +1,15 @@
+{
+  "file": "scaling_benchmark.csv",
+  "sha256": "752f1794ab969cfff8d4db0b33e7ac17e4dbd6509a4b2210091542a9b6edb82c",
+  "bytes": 1015,
+  "created_utc": "2026-10-09T19:07:03+00:00",
+  "rows": 14,
+  "columns": [
+    "quantity",
+    "value",
+    "unit"
+  ],
+  "machine": "arm64 Darwin, arm",
+  "n_scale": 5911,
+  "note": "timings on random matrices of the stated size; nothing here uses project results"
+}

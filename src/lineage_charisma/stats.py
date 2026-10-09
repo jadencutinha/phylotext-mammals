@@ -130,6 +130,8 @@ class PartialMantelResult:
 class MRMResult:
     names: tuple[str, ...]
     coef: np.ndarray          # standardized regression coefficients, one per predictor
+    coef_raw: np.ndarray      # coefficients on the scale analysed (ranks for Spearman, distances for Pearson)
+    intercept: float          # intercept on that same scale
     t: np.ndarray             # pseudo-t of each coefficient
     p: np.ndarray             # two-sided permutation p-value of each pseudo-t
     r2: float
@@ -207,10 +209,12 @@ def partial_mantel(
 ) -> PartialMantelResult:
     """Partial Mantel test: the correlation of x and y after the linear effect of the control matrices is removed from both.
 
-    The statistic is the partial correlation of the upper triangles (of their ranks, for Spearman).
+    The statistic is the partial correlation of the upper triangles (of their ranks, for Spearman):
+    the correlation between the residuals of x and of y after each is regressed on the controls.
     The null distribution reorders the rows and columns of `x` together and recomputes the partial
     correlation each time, leaving `y` and the controls as they are (the scheme of vegan's
-    mantel.partial, extended to several controls).
+    mantel.partial, extended to several controls). Pass the focal predictor as `x` and the
+    response as `y`.
     """
     if alternative not in ALTERNATIVES:
         raise ValueError(f"unknown alternative {alternative!r}; expected one of {ALTERNATIVES}")
@@ -248,10 +252,11 @@ def mrm(
 ) -> MRMResult:
     """Multiple regression on distance matrices (Lichstein 2007).
 
-    The response's upper triangle is regressed on the predictors' upper triangles, all standardized
-    (and ranked first, for Spearman), so the coefficients are standardized. Significance comes from
-    reordering the rows and columns of the response together: each coefficient is tested two-sided
-    on its pseudo-t, and the whole model on R squared.
+    The response's upper triangle is regressed on the predictors' upper triangles (ranked first, for
+    Spearman). `coef` holds the standardized coefficients; `coef_raw` and `intercept` are the same fit
+    on the unstandardized values. Significance comes from reordering the rows and columns of the
+    response together: each coefficient is tested two-sided on its pseudo-t, and the whole model on
+    R squared.
     """
     if not predictors:
         raise ValueError("mrm needs at least one predictor matrix")
@@ -273,5 +278,64 @@ def mrm(
     coef, t, r2 = fit(np.array([[_correlation(x, ys) for x in xs]]))
     _, null_t, null_r2 = fit(permuted_correlations(xs, ys, draw_permutations(n, permutations, seed), batch_size))
     p = np.array([_p_value(null_t[:, j], t[0, j], "two-sided") for j in range(k)])
-    return MRMResult(names=names, coef=coef[0], t=t[0], p=p, r2=float(r2[0]), p_r2=_p_value(null_r2, float(r2[0]), "greater"),
+    vectors = [upper_triangle(np.asarray(m, dtype=np.float64)) for m in (response, *predictors.values())]
+    if method == "spearman":
+        vectors = [rankdata(v) for v in vectors]
+    means, sds = np.array([v.mean() for v in vectors]), np.array([v.std() for v in vectors])
+    coef_raw = coef[0] * sds[0] / sds[1:]
+    intercept = float(means[0] - coef_raw @ means[1:])
+    return MRMResult(names=names, coef=coef[0], coef_raw=coef_raw, intercept=intercept, t=t[0], p=p, r2=float(r2[0]), p_r2=_p_value(null_r2, float(r2[0]), "greater"),
                      null_t=null_t, null_r2=null_r2, n_pairs=n_pairs, n=n, method=method, permutations=permutations, seed=seed)
+
+
+def mantel_on_pairs(
+    x: np.ndarray,
+    y: np.ndarray,
+    pairs: np.ndarray,
+    method: str = "spearman",
+    permutations: int = 9999,
+    seed: int | None = None,
+    alternative: str = "greater",
+) -> MantelResult:
+    """Correlation between x and y over a subset of species pairs, with a permutation p-value.
+
+    `pairs` is a symmetric boolean matrix marking the pairs to use. The null distribution reorders
+    the rows and columns of `y` together while the set of pairs stays where it is, so each
+    permutation puts different y values into the subset; for Spearman they are re-ranked each time.
+    """
+    if method not in METHODS:
+        raise ValueError(f"unknown method {method!r}; expected one of {METHODS}")
+    if alternative not in ALTERNATIVES:
+        raise ValueError(f"unknown alternative {alternative!r}; expected one of {ALTERNATIVES}")
+    x, y, pairs = np.asarray(x, dtype=np.float64), np.asarray(y, dtype=np.float64), np.asarray(pairs, dtype=bool)
+    validate_distance_matrix(x, "x")
+    validate_distance_matrix(y, "y")
+    if not (x.shape == y.shape == pairs.shape):
+        raise ValueError(f"shapes differ: x {x.shape}, y {y.shape}, pairs {pairs.shape}")
+    if not np.array_equal(pairs, pairs.T):
+        raise ValueError("pairs must be symmetric")
+    n = x.shape[0]
+    rows, cols = np.triu_indices(n, k=1)
+    keep = pairs[rows, cols]
+    rows, cols = rows[keep], cols[keep]
+    if len(rows) < 3:
+        raise ValueError(f"need at least 3 pairs, got {len(rows)}")
+
+    def standardized(values: np.ndarray, name: str) -> np.ndarray:
+        if method == "spearman":
+            values = rankdata(values, axis=-1)
+        centred = values - values.mean(axis=-1, keepdims=True)
+        norm = np.linalg.norm(centred, axis=-1, keepdims=True)
+        if np.any(norm == 0):
+            raise ValueError(f"{name}: all distances in the subset are equal, so the correlation is undefined")
+        return centred / norm
+
+    xs = standardized(x[rows, cols], "x")
+    r = float(xs @ standardized(y[rows, cols], "y"))
+    perms = draw_permutations(n, permutations, seed)
+    null = np.empty(permutations)
+    for start in range(0, permutations, 256):
+        p = perms[start:start + 256]
+        null[start:start + len(p)] = standardized(y[p[:, rows], p[:, cols]], "y") @ xs
+    return MantelResult(r=r, p=_p_value(null, r, alternative), null=null, n_pairs=len(rows), n=n, method=method,
+                        alternative=alternative, permutations=permutations, seed=seed)

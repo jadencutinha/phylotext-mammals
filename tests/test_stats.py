@@ -284,3 +284,81 @@ def test_mrm_separates_a_real_predictor_from_an_irrelevant_one(confounded):
         mrm(x, {"z": z, "z2": z * 3}, method="pearson")
     with pytest.raises(ValueError, match="at least one predictor"):
         mrm(x, {})
+
+
+# Week 5: the three synthetic cases named in the H2 plan, and the extras the H2 scripts rely on
+
+from lineage_charisma.stats import mantel_on_pairs  # noqa: E402
+
+
+def test_partial_r_stays_large_when_text_is_phylogeny_plus_noise_and_the_control_is_unrelated(rng):
+    phylo, unrelated = random_distance_matrix(50, rng), random_distance_matrix(50, rng)
+    text = phylo + 0.3 * random_distance_matrix(50, rng)
+    raw = mantel(text, phylo, permutations=999, seed=1)
+    partial = partial_mantel(phylo, text, [unrelated], permutations=999, seed=1)
+    assert raw.r > 0.7
+    assert partial.r == pytest.approx(raw.r, abs=0.03)
+    assert partial.p == 1 / 1000
+
+
+def test_partial_r_is_near_zero_when_text_comes_only_from_a_control_correlated_with_phylogeny(rng):
+    control = random_distance_matrix(60, rng)
+    phylo = control + 0.5 * random_distance_matrix(60, rng)
+    text = control + 0.5 * random_distance_matrix(60, rng)
+    raw = mantel(text, phylo, method="pearson", permutations=999, seed=1)
+    partial = partial_mantel(phylo, text, [control], method="pearson", permutations=999, seed=1)
+    assert raw.r > 0.4 and raw.p == 1 / 1000
+    assert abs(partial.r) < 0.08
+    assert partial.p > 0.05
+    ranked = partial_mantel(phylo, text, [control], permutations=999, seed=1)
+    assert abs(ranked.r) < 0.08
+
+
+def test_partial_mantel_and_mrm_are_reproducible_from_the_seed(confounded):
+    x, y, z, _ = confounded
+    a, b, c = (partial_mantel(x, y, [z], permutations=199, seed=s) for s in (5, 5, 6))
+    assert a.r == b.r == c.r and a.p == b.p
+    np.testing.assert_array_equal(a.null, b.null)
+    assert not np.array_equal(a.null, c.null)
+    m, n, o = (mrm(y, {"x": x, "z": z}, permutations=199, seed=s) for s in (5, 5, 6))
+    np.testing.assert_array_equal(m.null_t, n.null_t)
+    np.testing.assert_array_equal(m.p, n.p)
+    assert not np.array_equal(m.null_t, o.null_t)
+
+
+@pytest.mark.parametrize("method", ["spearman", "pearson"])
+def test_mrm_raw_coefficients_match_ordinary_least_squares(confounded, method):
+    x, y, z, _ = confounded
+    vectors = [upper_triangle(m) for m in (y, x, z)]
+    if method == "spearman":
+        vectors = [rankdata(v) for v in vectors]
+    design = np.column_stack([np.ones(len(vectors[0])), vectors[1], vectors[2]])
+    beta, *_ = np.linalg.lstsq(design, vectors[0], rcond=None)
+    fit = mrm(y, {"x": x, "z": z}, method=method, permutations=9, seed=0)
+    np.testing.assert_allclose(fit.coef_raw, beta[1:], rtol=1e-8)
+    assert fit.intercept == pytest.approx(beta[0], rel=1e-8, abs=1e-8)
+    predicted = design @ beta
+    assert fit.r2 == pytest.approx(1 - ((vectors[0] - predicted) ** 2).sum() / ((vectors[0] - vectors[0].mean()) ** 2).sum())
+
+
+def test_mantel_on_pairs_with_every_pair_is_the_mantel_test(rng):
+    x, y = random_distance_matrix(20, rng), random_distance_matrix(20, rng)
+    everything = ~np.eye(20, dtype=bool)
+    for method in ("spearman", "pearson"):
+        whole, part = mantel(x, y, method=method, permutations=199, seed=4), mantel_on_pairs(x, y, everything, method=method, permutations=199, seed=4)
+        assert part.r == pytest.approx(whole.r)
+        np.testing.assert_allclose(part.null, whole.null, atol=1e-10)
+        assert part.p == whole.p
+
+
+def test_mantel_on_pairs_matches_an_explicit_loop_on_a_subset(rng):
+    x, y = random_distance_matrix(15, rng), random_distance_matrix(15, rng)
+    pairs = x < np.median(upper_triangle(x))
+    np.fill_diagonal(pairs, False)
+    result = mantel_on_pairs(x, y, pairs, permutations=50, seed=9)
+    keep = upper_triangle(pairs)
+    assert result.n_pairs == keep.sum()
+    assert result.r == pytest.approx(spearmanr(upper_triangle(x)[keep], upper_triangle(y)[keep])[0])
+    perms = draw_permutations(15, 50, 9)
+    expected = [spearmanr(upper_triangle(x)[keep], upper_triangle(y[np.ix_(p, p)])[keep])[0] for p in perms]
+    np.testing.assert_allclose(result.null, expected, atol=1e-10)
