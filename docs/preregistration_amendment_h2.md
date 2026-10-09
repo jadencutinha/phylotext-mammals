@@ -135,4 +135,11 @@ The 277-species `matrices_min100/` set stays exploratory and is not planned for 
 
 ## 11. Changes
 
-None.
+### Change 1 (2026-10-09, before any H2 results)
+
+Made after review of the first version of this file and before any partial Mantel test or MRM was run on the project's data. Sections 1 to 10 are left as first committed.
+
+**Why.** The raw r is small, so the ratio in rule (b) is noisy. Rule (b) stays as written in section 6 and is still decided on the MCC tree alone. Two further quantities are reported next to it. Neither is decisive.
+
+1. **Absolute change in r for the primary model**: raw r minus partial r, on the 283 species and the MCC tree.
+2. **Distribution of the partial-to-raw ratio across the 100 posterior trees**: for each tree, the primary partial r divided by the raw r on the same tree and species. Reported as median, 2.5th and 97.5th percentiles, minimum and maximum, and the share of trees where the ratio is under 50%. The ratio is not defined for a tree whose raw r is at or below zero; such trees are counted and reported separately, the summary statistics are taken over the remaining trees, and the share under 50% is given as a share of all 100 trees with the undefined ones listed as their own category.
