@@ -52,3 +52,31 @@ def save(fig, path) -> None:
 
 def combo_label(model: str, rule: str, mask: str | None = None) -> str:
     return f"{model.split('/')[-1]} / {rule}" + (f" / {mask}" if mask else "")
+
+
+def plot_variants(table, value: str, model_rules, masks, primary, xlabel: str, title: str, path) -> None:
+    """One row per model and rule, one dot per mask level, with the primary specification ringed."""
+    fig, ax = plt.subplots(figsize=(7.2, 0.62 * len(model_rules) + 1.7), constrained_layout=True)
+    rows = {mr: i for i, mr in enumerate(reversed(model_rules))}
+    by_combo = table.set_index(["model", "rule", "mask"])
+    for mr, row in rows.items():
+        values = [by_combo.loc[(*mr, mask), value] for mask in masks]
+        ax.hlines(row, min(values), max(values), color=AXIS, linewidth=2, zorder=1)
+    for mask in masks:
+        ax.scatter([by_combo.loc[(*mr, mask), value] for mr in rows], list(rows.values()), s=64, color=MASK_COLORS[mask],
+                   edgecolor=SURFACE, linewidth=1.5, zorder=3, label=MASK_NAMES[mask])
+    pr = by_combo.loc[primary, value]
+    ax.scatter([pr], [rows[primary[:2]]], s=210, facecolor="none", edgecolor=INK, linewidth=1.4, zorder=4, label="primary specification")
+    ax.annotate(f"primary, r = {pr:.3f}", xy=(pr, rows[primary[:2]]), xytext=(0, 13), textcoords="offset points",
+                ha="center", color=INK, path_effects=HALO)
+    ax.axvline(0, color=MUTED, linewidth=0.8)
+    ax.set_ylim(-0.6, len(rows) - 0.3)
+    ax.set_yticks(list(rows.values()), [combo_label(*mr) for mr in rows])
+    ax.tick_params(axis="y", length=0)
+    ax.set_xlabel(xlabel)
+    ax.set_title(title)
+    ax.grid(True, axis="x")
+    ax.set_axisbelow(True)
+    ax.spines["left"].set_visible(False)
+    fig.legend(loc="outside lower center", ncol=2, handletextpad=0.3, columnspacing=1.6)
+    save(fig, path)

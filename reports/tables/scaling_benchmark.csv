@@ -1,0 +1,15 @@
+quantity,value,unit
+species pairs at n = 5911,17.467005,million
+"one distance matrix, float64",0.279519368,GB
+"one distance matrix, float32",0.139759684,GB
+permutation batch of 128 at float64 (current default),35.778479104,GB
+"Mantel test at n = 284, 9,999 permutations",4.011310499151587,seconds
+"partial Mantel (2 controls) at n = 284, 9,999 permutations",5.207011537140235,seconds
+ranking one matrix at n = 5911,4.231155416928232,seconds
+"Mantel test at n = 5911, per permutation",0.25136696531747776,seconds
+"Mantel test at n = 5911, 9,999 permutations",0.6981717461692946,hours
+"Mantel test at n = 5911, 999 permutations",4.185259972536005,minutes
+"partial Mantel (2 controls) at n = 5911, 9,999 permutations",0.9636382908539963,hours
+"passages per species in the Carnivora corpus (chunk rule, 512 tokens)",1.7017543859649122,passages
+bge-large-en-v1.5: full-length passages per second on mps,12.098812515142068,passages/s
+all-mpnet-base-v2: full-length passages per second on mps,39.59616348185527,passages/s

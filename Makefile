@@ -2,16 +2,20 @@ PYTHON ?= .venv/bin/python
 FORCE ?=
 ARGS = $(if $(FORCE),--force,)
 ACCEPT_RESIDUAL ?=
+H2_ARGS ?=
 
-.PHONY: all week2 week3 week4 setup mdd tree reconcile prune wiki corpus embed matrices matrices-sensitivity sanity h1 ecology attention diagnostics report test posterior posterior-h1 clean-interim clean
+.PHONY: all week2 week3 week4 week5 setup mdd tree reconcile prune wiki corpus embed matrices matrices-sensitivity sanity h1 ecology attention diagnostics report h2 exploratory report5 test posterior posterior-h1 clean-interim clean
 
-all: week2 week3 week4
+all: week2 week3 week4 week5
 
 week2: mdd tree reconcile prune wiki
 
 week3: corpus embed matrices sanity
 
 week4: h1 ecology attention diagnostics report
+
+# h2 reads the posterior archive (make posterior, about 1.2 GB); H2_ARGS=--skip-posterior leaves those trees out
+week5: h2 exploratory report5
 
 setup:
 	python3 -m venv .venv
@@ -68,6 +72,15 @@ posterior:
 
 posterior-h1: posterior matrices
 	$(PYTHON) scripts/14_posterior_h1.py
+
+h2: ecology attention
+	$(PYTHON) scripts/15_run_h2.py $(H2_ARGS)
+
+exploratory: ecology attention
+	$(PYTHON) scripts/16_exploratory.py
+
+report5: h2 exploratory
+	$(PYTHON) scripts/17_week5_report.py
 
 test:
 	$(PYTHON) -m pytest

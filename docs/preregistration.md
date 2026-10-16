@@ -124,3 +124,7 @@ Made after review of the first version and before any Mantel test or text–phyl
 - **Timing**: this is not one of the Week 4 deliverables. The posterior has not been downloaded, and nothing in this amendment depends on having seen it.
 
 The 277-species `matrices_min100/` set stays exploratory.
+
+### Amendment 2 (2026-10-09, before any H2 results)
+
+The H2 plan (partial Mantel tests and MRM, decision rules, robustness and exploratory analyses) is in `docs/preregistration_amendment_h2.md`, committed before any of those analyses was run on the project's data.

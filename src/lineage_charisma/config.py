@@ -137,6 +137,11 @@ class Config:
         p.mkdir(parents=True, exist_ok=True)
         return p
 
+    def week5_figures_dir(self) -> Path:
+        p = self.reports / "figures" / "week5"
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+
     def tables_dir(self) -> Path:
         p = self.reports / "tables"
         p.mkdir(parents=True, exist_ok=True)

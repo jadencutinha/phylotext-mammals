@@ -2,7 +2,7 @@
 
 Does text-embedding similarity between mammal species descriptions recover the evolutionary tree, or does it mainly reflect human attention and charisma? This repo compares a text-distance matrix (from Wikipedia description embeddings) with a phylogenetic-distance matrix (from the Upham et al. 2019 mammal tree) using Mantel and partial Mantel tests.
 
-**Current state: Week 4. The analysis is pre-registered in [`docs/preregistration.md`](docs/preregistration.md), the H1 Mantel tests have been run for all 12 variants, and the ecological and attention distance matrices are built. Results are in [`reports/week4_report.md`](reports/week4_report.md).** No partial Mantel or MRM yet (Week 5). The target clade is set in `config.yaml` (currently order Carnivora). No code names a clade directly, so moving to all mammals only means changing `target_clade`.
+**Current state: Week 5. The analysis is pre-registered in [`docs/preregistration.md`](docs/preregistration.md) and its H2 amendment [`docs/preregistration_amendment_h2.md`](docs/preregistration_amendment_h2.md). H1 (Week 4, [`reports/week4_report.md`](reports/week4_report.md)) and H2 (partial Mantel tests and MRM, [`reports/week5_report.md`](reports/week5_report.md)) have been run on Carnivora.** On the primary specification the text–phylogeny correlation is small (r = 0.035 on 283 species) and is not significant after controlling for ecology and article length (partial r = 0.020, p = 0.13), while keeping more than half its size; the Week 5 report has the robustness results and the plan for scaling to all mammals. The target clade is set in `config.yaml` (currently order Carnivora). No code names a clade directly, so moving to all mammals only means changing `target_clade`.
 
 ## Setup
 
@@ -13,6 +13,7 @@ make all            # runs every stage; each stage skips work whose output is ca
 make week2          # stages 1-5 only (data foundation)
 make week3          # stages 5b-8 only (corpus, embeddings, matrices, sanity report)
 make week4          # stages 9-13 only (H1 Mantel tests, ecology, attention, diagnostics, report)
+make week5          # stages 15-17 (H2 partial Mantel and MRM, exploratory analyses, report); needs make posterior first
 make all FORCE=1    # rebuilds every stage, including the downloads and API pulls
 ```
 
@@ -38,10 +39,15 @@ The first `make embed` downloads the two embedding models from the Hugging Face 
 | 11 | `make attention` → `scripts/11_build_attention.py` | `matched.csv`, `corpus.parquet`, Wikipedia API, Wikimedia Pageviews API | `data/processed/attention.csv`, `pageviews_monthly.csv`, `matrices/attention_pageviews.npy`, `attention_length.npy`, `attention_combined.npy`, `attention_mean_log_pageviews.npy` |
 | 12 | `make diagnostics` → `scripts/12_confound_diagnostics.py` | phylogenetic, ecology, attention and primary text matrices | `reports/tables/confound_mantel.csv` |
 | 13 | `make report` → `scripts/13_week4_report.py` | the tables above, `reports/week4_notes.md` | `reports/week4_report.md` |
+| 14 | `make posterior-h1` → `scripts/14_posterior_h1.py` (optional, see below) | posterior archive, primary text matrix | `reports/tables/h1_posterior.csv`, `reports/figures/week4/h1_posterior.png` |
+| 15 | `make h2` → `scripts/15_run_h2.py` | text, phylogenetic, ecology and attention matrices, posterior archive | `reports/tables/h2_partial_mantel.csv`, `h2_mrm.csv`, `h2_posterior.csv`, `reports/figures/week5/h2_*.png` |
+| 16 | `make exploratory` → `scripts/16_exploratory.py` | primary text matrix, phylogenetic and control matrices | `reports/tables/exploratory_well_known.csv`, `exploratory_nonlinear.csv`, `reports/figures/week5/exploratory_*.png` |
+| 17 | `make report5` → `scripts/17_week5_report.py` | the Week 5 tables, `reports/week5_notes.md` | `reports/week5_report.md` |
+| 18 | `scripts/18_scaling_benchmark.py` (run by hand) | none (random matrices at full-mammal size), the embedding models | `reports/tables/scaling_benchmark.csv` |
 
 Every script takes `--force` and `--config PATH`. Stages 3, 5 and 11 also take `--offline`, which answers every API request from the cache and fails if a response is missing. Every CSV written gets a `.meta.json` sidecar with its sha256, row count, creation time, and source (for example, the MDD version).
 
-Optional: `make posterior` downloads the full 10,000-tree posterior from VertLife (`Completed_5911sp_topoCons_NDexp.zip`, about 1.2 GB) as 10,000 single-tree Newick files. Posterior tips are labelled `Genus_species`, the MCC tree's labels without the `_FAMILY_ORDER` suffix, and the two sets match one to one, so the Week 2 reconciliation applies to every tree. `make posterior-h1` (`scripts/14_posterior_h1.py`, about 8 minutes) repeats the primary H1 test on the 100 trees fixed by amendment A1.3 of the pre-registration and writes `reports/tables/h1_posterior.csv` and `reports/figures/week4/h1_posterior.png`; `make report` includes the result when that table exists. It is not part of `make week4` because of the download.
+Optional: `make posterior` downloads the full 10,000-tree posterior from VertLife (`Completed_5911sp_topoCons_NDexp.zip`, about 1.2 GB) as 10,000 single-tree Newick files. Posterior tips are labelled `Genus_species`, the MCC tree's labels without the `_FAMILY_ORDER` suffix, and the two sets match one to one, so the Week 2 reconciliation applies to every tree. `make posterior-h1` (`scripts/14_posterior_h1.py`, about 8 minutes) repeats the primary H1 test on the 100 trees fixed by amendment A1.3 of the pre-registration and writes `reports/tables/h1_posterior.csv` and `reports/figures/week4/h1_posterior.png`; `make report` includes the result when that table exists. It is not part of `make week4` because of the download. The 100 pruned distance matrices are cached in `data/interim/posterior_phylo.npz` (about 8 minutes to build, then reused by stages 14 and 15).
 
 ### Data sources (MDD and tree checked 2026-09-24; trait files checked 2026-10-04)
 
@@ -116,11 +122,11 @@ The report is regenerated on every run. Hand-written observations live in `repor
 
 `mantel(x, y, method, permutations, seed, alternative)` correlates the upper triangles of two distance matrices and builds the null distribution by reordering the rows and columns of `y` together. It returns r, the p-value, the null distribution and the number of pairs. p = (1 + permuted statistics at least as extreme as the observed one) / (1 + permutations). Spearman ranks the distances once, with average ranks for ties. The permutation loop is vectorized: 9,999 permutations of a 284 × 284 matrix take about 4 seconds. Every call starts a fresh generator from the seed, so a result does not depend on which tests ran before it. The tests check the statistic against scipy, the null against an explicit permutation loop, and r and p against scikit-bio's `mantel`.
 
-The same module has `partial_mantel(x, y, controls, ...)` and `mrm(response, predictors, ...)` for Week 5. Both reuse the vectorized permutation code and are tested on synthetic matrices against least-squares fits and explicit permutation loops. **Neither has been run on the project's data.** scikit-bio has no partial Mantel test or MRM, so there is no outside cross-check for those beyond the one-predictor case, where MRM reduces to the plain Mantel test.
+The same module has `partial_mantel(x, y, controls, ...)` and `mrm(response, predictors, ...)`, used in Week 5 (see below).
 
 ### H1 (stage 9)
 
-`h1_mantel.csv` has one row per model, rule, mask level and method (`model, rule, mask, method, r, p, n_pairs, is_primary`), 24 rows in all. `is_primary` marks the one row that decides H1. `h1_mantel_families.csv` repeats the primary specification inside the three largest families, as description only. Week 4 figures go in `reports/figures/week4/`, because stage 8 clears `reports/figures/*.png` on every run.
+`h1_mantel.csv` has one row per model, rule, mask level and method (`model, rule, mask, method, r, p, n_pairs, is_primary`), 24 rows in all. `is_primary` marks the one row that decides H1. `h1_mantel_families.csv` repeats the primary specification inside the three largest families, as description only. Week 4 figures go in `reports/figures/week4/`. Stage 8 clears only its own figures (the five filename prefixes it writes) before a rebuild.
 
 ### Ecological distance (stage 10)
 
@@ -137,6 +143,30 @@ Stage 11 pulls monthly English Wikipedia pageviews for 2023-01 through 2025-12 (
 ### Diagnostics and report (stages 12 and 13)
 
 Stage 12 runs Spearman Mantel tests (two-sided) between phylogeny, the two ecology matrices and the three attention matrices, and between the primary text matrix and each control. These are marginal correlations; nothing is partialled. Stage 13 writes `reports/week4_report.md` from the tables and appends `reports/week4_notes.md` unchanged; edit the notes, not the report.
+
+## Week 5: H2, partial Mantel tests and MRM
+
+The H2 plan is [`docs/preregistration_amendment_h2.md`](docs/preregistration_amendment_h2.md), committed (and pushed) before any partial Mantel test or MRM was run on the project's data. It fixes the species set, the primary model, the two decision rules, the robustness variants and the exploratory analyses.
+
+### Partial Mantel and MRM (`src/lineage_charisma/stats.py`)
+
+- `partial_mantel(x, y, controls, ...)`: the correlation between the residuals of `x` and `y` after each is regressed on the control matrices (upper triangles, ranked first for Spearman). The null distribution reorders the rows and columns of `x` together and recomputes the partial correlation, so the focal predictor goes in as `x` (phylogeny) and the response as `y` (text).
+- `mrm(response, predictors, ...)`: least-squares regression of the response's upper triangle on the predictors' (Lichstein 2007). It returns standardized coefficients, coefficients and intercept on the scale analysed, R², and permutation p-values (two-sided on each coefficient's pseudo-t, from reordering the response matrix).
+- `mantel_on_pairs(x, y, pairs, ...)`: a correlation over a subset of species pairs, with the set of pairs held fixed under permutation. Used only by the exploratory quartile analysis.
+
+Both tests reuse the Week 4 permutation code, since a permuted partial correlation or regression needs only the permuted correlations between matrices. Tests check the partial correlation against residuals from an explicit least-squares fit and against the textbook one-control formula, MRM coefficients and R² against ordinary least squares, and both null distributions against explicit permutation loops. scikit-bio has no partial Mantel test or MRM, so the outside cross-check is the one-predictor case, where MRM reduces to the plain Mantel test (which is checked against scikit-bio). The synthetic cases in the plan are covered: text built from phylogeny plus noise keeps its partial r given an unrelated control, text built only from a control correlated with phylogeny gives a partial r near zero, and results are reproducible from the seed.
+
+### H2 (stage 15)
+
+`src/lineage_charisma/h2.py` loads phylogeny and the control matrices cut to the 283 species with ecology data and holds the models named in the amendment. `h2_partial_mantel.csv` has one row per analysis and model: `analysis` (`primary`, `secondary`, `variant`, `unweighted_gower`, `complete_traits`), `model_id`, the text matrix, the controls, `raw_r` and `raw_p` on the same species, `partial_r`, `partial_p`, `share_of_raw`, `change` (raw minus partial), the two decision rules (`survives`, `confounded`) and `is_primary`. `h2_mrm.csv` has one row per predictor per fit. `h2_posterior.csv` has the raw and primary partial r for each of the 100 posterior trees. `make h2 H2_ARGS=--skip-posterior` leaves the posterior trees out.
+
+### Exploratory analyses (stage 16)
+
+Two analyses planned in section 9 of the amendment and labelled exploratory everywhere: species pairs split into quartiles of mean log pageviews, and H1 and the primary H2 model rerun with phylogenetic distance log-transformed (Pearson only, since a log transform cannot change a Spearman correlation) or capped at 30 My.
+
+### Report (stage 17)
+
+Stage 17 writes `reports/week5_report.md` from the tables and appends `reports/week5_notes.md` unchanged; edit the notes, not the report. The notes hold the interpretation and the go/no-go for scaling to all mammals, which rests on the timings in `reports/tables/scaling_benchmark.csv` (`scripts/18_scaling_benchmark.py`, run by hand; it times the Mantel code on random matrices of 5,911 species and the embedding models on this machine).
 
 ## Outputs of stage 3
 
@@ -197,8 +227,15 @@ src/lineage_charisma/
   embed.py                  chunking, pooling, normalization, model wrapper, embedding cache
   distances.py              text and phylogenetic matrices, species-order alignment, validation
   sanity.py                 nearest neighbours, family and length summaries for the report
-scripts/01..08_*.py         one script per pipeline stage
+  stats.py                  Mantel, partial Mantel and MRM with a shared vectorized permutation null
+  traits.py                 EltonTraits and COMBINE loading, name matching, Gower distance
+  attention.py              Wikimedia pageviews client, attention variables and matrices
+  posterior.py              the pre-registered draw of posterior trees and their cached distance matrices
+  h2.py                     the H2 species subset, models and decision rules
+  plotstyle.py              one palette and figure style for every report
+scripts/01..18_*.py         one script per pipeline stage
 tests/                      unit tests (no network or model needed); tests/fixtures holds saved API responses
-reports/                    week3_sanity.md (generated), week3_notes.md (hand-written), figures/
+reports/                    weekN reports (generated), weekN_notes.md (hand-written), figures/, tables/
+docs/                       pre-registration and its H2 amendment, ecology trait notes
 data/                       gitignored: raw/, interim/, processed/
 ```

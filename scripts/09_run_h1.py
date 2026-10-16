@@ -8,7 +8,7 @@ from lineage_charisma.config import base_parser, load_config
 from lineage_charisma.corpus import read_corpus
 from lineage_charisma.distances import assert_same_order, load_matrix, phylo_matrix_path, text_matrix_path
 from lineage_charisma.io_utils import write_csv
-from lineage_charisma.plotstyle import AXIS, BLUE, BLUE_RAMP, HALO, INK, INK_2, MASK_COLORS, MASK_NAMES, MEDIAN_LINE, MUTED, SURFACE, apply_style, combo_label, plt, save
+from lineage_charisma.plotstyle import BLUE, BLUE_RAMP, HALO, INK, INK_2, MASK_COLORS, MEDIAN_LINE, SURFACE, apply_style, combo_label, plot_variants, plt, save
 from lineage_charisma.sanity import binned_median
 from lineage_charisma.stats import METHODS, mantel, submatrix, upper_triangle
 
@@ -49,33 +49,6 @@ def plot_null(result, label, path) -> None:
     ax.set_title(f"Permutation null and observed r, {result.permutations:,} permutations ({label})")
     ax.grid(True, axis="y")
     ax.set_axisbelow(True)
-    save(fig, path)
-
-
-def plot_variants(table: pd.DataFrame, model_rules, masks, primary, path) -> None:
-    fig, ax = plt.subplots(figsize=(7.2, 0.62 * len(model_rules) + 1.7), constrained_layout=True)
-    rows = {mr: i for i, mr in enumerate(reversed(model_rules))}
-    by_combo = table.set_index(["model", "rule", "mask"])
-    for mr, row in rows.items():
-        values = [by_combo.loc[(*mr, mask), "r"] for mask in masks]
-        ax.hlines(row, min(values), max(values), color=AXIS, linewidth=2, zorder=1)
-    for mask in masks:
-        ax.scatter([by_combo.loc[(*mr, mask), "r"] for mr in rows], list(rows.values()), s=64, color=MASK_COLORS[mask],
-                   edgecolor=SURFACE, linewidth=1.5, zorder=3, label=MASK_NAMES[mask])
-    pr = by_combo.loc[primary, "r"]
-    ax.scatter([pr], [rows[primary[:2]]], s=210, facecolor="none", edgecolor=INK, linewidth=1.4, zorder=4, label="primary specification")
-    ax.annotate(f"primary, r = {pr:.3f}", xy=(pr, rows[primary[:2]]), xytext=(0, 13), textcoords="offset points",
-                ha="center", color=INK, path_effects=HALO)
-    ax.axvline(0, color=MUTED, linewidth=0.8)
-    ax.set_ylim(-0.6, len(rows) - 0.3)
-    ax.set_yticks(list(rows.values()), [combo_label(*mr) for mr in rows])
-    ax.tick_params(axis="y", length=0)
-    ax.set_xlabel("Spearman Mantel r, text distance against phylogenetic distance")
-    ax.set_title("H1 across all 12 variants")
-    ax.grid(True, axis="x")
-    ax.set_axisbelow(True)
-    ax.spines["left"].set_visible(False)
-    fig.legend(loc="outside lower center", ncol=2, handletextpad=0.3, columnspacing=1.6)
     save(fig, path)
 
 
@@ -123,7 +96,8 @@ def main() -> None:
     masks = [m for m in MASK_COLORS if m in cfg.mask_levels]
     plot_scatter(text[primary], phylo, head.r, head.p, combo_label(*primary), fig_dir / "h1_scatter_primary.png")
     plot_null(head, combo_label(*primary), fig_dir / "h1_null_primary.png")
-    plot_variants(table[table["method"] == primary_method], model_rules, masks, primary, fig_dir / "h1_variants.png")
+    plot_variants(table[table["method"] == primary_method], "r", model_rules, masks, primary, "Spearman Mantel r, text distance against phylogenetic distance",
+                  "H1 across all 12 variants", fig_dir / "h1_variants.png")
     print(f"[h1] wrote {cfg.tables_dir().relative_to(cfg.root)}/h1_mantel.csv, h1_mantel_families.csv and 3 figures in {fig_dir.relative_to(cfg.root)}")
 
 

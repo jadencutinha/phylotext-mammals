@@ -1,0 +1,33 @@
+{
+  "file": "exploratory_nonlinear.csv",
+  "sha256": "e591308e00d52e59ebf5b8578f59773b4b8bc4d8a412befb8bf3e1335eeeaca7",
+  "bytes": 878,
+  "created_utc": "2026-10-09T19:29:41+00:00",
+  "rows": 5,
+  "columns": [
+    "status",
+    "transform",
+    "method",
+    "h1_r",
+    "h1_p",
+    "h1_n_species",
+    "raw_r",
+    "raw_p",
+    "partial_r",
+    "partial_p",
+    "share_of_raw",
+    "change",
+    "h2_n_species"
+  ],
+  "status": "exploratory",
+  "permutations": 9999,
+  "seed": 20261004,
+  "alternative": "greater",
+  "cap_my": 30.0,
+  "share_of_pairs_at_or_below_cap": 0.12800477778330763,
+  "controls": [
+    "ecology",
+    "length"
+  ],
+  "text_matrix": "bge-large-en-v1.5 / chunk / strict"
+}

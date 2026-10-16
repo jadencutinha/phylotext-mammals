@@ -1,0 +1,33 @@
+{
+  "file": "h2_posterior.csv",
+  "sha256": "69a00c4058263b832a38cbcd15d2f152cebc771dbe603294fb2a2d4e73e12cf5",
+  "bytes": 20982,
+  "created_utc": "2026-10-09T19:28:13+00:00",
+  "rows": 100,
+  "columns": [
+    "draw",
+    "tree_index",
+    "tree_file",
+    "method",
+    "controls",
+    "raw_r",
+    "raw_p",
+    "partial_r",
+    "partial_p",
+    "share_of_raw",
+    "change",
+    "n_species",
+    "n_pairs",
+    "survives",
+    "confounded"
+  ],
+  "alternative": "greater",
+  "permuted": "phylogeny",
+  "n_trees": 100,
+  "selection_seed": 20261004,
+  "permutations": 9999,
+  "seed": 20261004,
+  "alpha": 0.05,
+  "text_matrix": "bge-large-en-v1.5 / chunk / strict",
+  "plan": "docs/preregistration_amendment_h2.md"
+}
