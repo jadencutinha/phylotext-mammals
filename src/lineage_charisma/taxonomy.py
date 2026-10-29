@@ -113,6 +113,8 @@ def load_mdd(path: Path) -> pd.DataFrame:
 def filter_clade(df: pd.DataFrame, rank: str | None, name: str | None) -> pd.DataFrame:
     if not rank or not name:
         return df.copy()
+    if rank == "class" and rank not in df.columns and str(name).lower() == "mammalia":
+        return df.copy()   # MDD lists mammals only and has no class column
     if rank not in df.columns:
         raise KeyError(f"rank column {rank!r} not in table")
     return df[df[rank].astype(str).str.lower() == str(name).lower()].copy()

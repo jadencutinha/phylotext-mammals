@@ -1,5 +1,9 @@
 PYTHON ?= .venv/bin/python
 FORCE ?=
+CLADE ?=
+ifneq ($(CLADE),)
+export LC_CLADE := $(CLADE)
+endif
 ARGS = $(if $(FORCE),--force,)
 ACCEPT_RESIDUAL ?=
 H2_ARGS ?=

@@ -15,7 +15,7 @@ def main() -> None:
     parser.add_argument("--rule", action="append", choices=RULES, help="only this rule (repeatable); default: all in config")
     parser.add_argument("--mask", action="append", help="only this mask level (repeatable); default: all in config")
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     ecfg = cfg["embedding"]
     models = args.model or ecfg["models"]
     rules = args.rule or ecfg["rules"]

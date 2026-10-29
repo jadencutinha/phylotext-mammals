@@ -23,7 +23,7 @@ def main() -> None:
     parser.add_argument("--sensitivity", action="store_true",
                         help="drop species under matrices.sensitivity_min_tokens instead of the stubs, and write to a separate matrices_min<N>/ directory")
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     mcfg = cfg.get("matrices", {})
     threshold = int(mcfg["sensitivity_min_tokens"]) if args.sensitivity else None
     out_dir, order_path = cfg.matrices_dir(threshold), cfg.species_order_path(threshold)

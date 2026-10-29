@@ -1,6 +1,14 @@
-target_clade:
+target_clade:                    # the Carnivora pilot; outputs in data/interim, data/processed, reports/tables
   rank: order
   name: Carnivora
+
+# Full-scale runs: `--clade mammalia` on any script (or LC_CLADE=mammalia, or `make ... CLADE=mammalia`)
+# deep-merges the entry below over every setting in this file. Interim, processed and table outputs go to
+# a mammalia/ subdirectory, so the pilot outputs are untouched. Raw downloads and the Wikipedia/API caches are shared.
+clades:
+  mammalia:
+    target_clade: {rank: class, name: Mammalia}
+    output_subdir: mammalia
 
 paths:
   raw: data/raw

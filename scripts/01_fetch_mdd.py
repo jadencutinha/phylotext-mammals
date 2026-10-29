@@ -9,7 +9,7 @@ from lineage_charisma.taxonomy import filter_clade, load_mdd, load_mdd_synonyms,
 
 def main() -> None:
     args = base_parser("Download the Mammal Diversity Database and extract the target clade.").parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     src = cfg["sources"]["mdd"]
     out_species, out_syn = cfg.mdd_species_path(), cfg.mdd_synonyms_path()
     if skip_if_cached([out_species, out_syn], args.force):

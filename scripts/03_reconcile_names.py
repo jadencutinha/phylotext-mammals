@@ -70,7 +70,7 @@ def main() -> None:
     parser = base_parser("Reconcile MDD names with tree tips and English Wikipedia titles.")
     parser.add_argument("--offline", action="store_true", help="use only cached API responses")
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     outputs = [cfg.matched_path(), cfg.residual_path(), cfg.excluded_species_path(), cfg.unused_tips_path()]
     if skip_if_cached(outputs, args.force):
         return

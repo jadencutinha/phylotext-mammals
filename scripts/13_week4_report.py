@@ -34,7 +34,7 @@ def p_text(p: float, perms: int) -> str:
 
 def main() -> None:
     args = base_parser("Week 4 report: H1 results, robustness, trait and attention coverage, confound diagnostics.").parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     tables, fig_dir, report_path = cfg.tables_dir(), cfg.week4_figures_dir(), cfg.reports / "week4_report.md"
     scfg, acfg = cfg["stats"], cfg["attention"]
     perms, alpha, method = int(scfg["permutations"]), float(scfg["alpha"]), scfg["method"]

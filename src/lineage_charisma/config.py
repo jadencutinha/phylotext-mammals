@@ -36,9 +36,16 @@ class Config:
         name = self.clade_name or "all"
         return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
 
-    def path(self, key: str) -> Path:
+    @property
+    def output_subdir(self) -> str | None:
+        """Set by a `clades` overlay (e.g. "mammalia"): interim, processed and table outputs go one level down."""
+        return self.data.get("output_subdir")
+
+    def path(self, key: str, shared: bool = False) -> Path:
         p = Path(self.data["paths"][key])
         p = p if p.is_absolute() else self.root / p
+        if self.output_subdir and not shared and key in ("interim", "processed"):
+            p = p / self.output_subdir
         p.mkdir(parents=True, exist_ok=True)
         return p
 
@@ -79,12 +86,12 @@ class Config:
         return self.interim / "unused_tree_tips.csv"
 
     def wiki_dir(self) -> Path:
-        p = self.interim / "wiki"
+        p = self.path("interim", shared=True) / "wiki"     # shared across clades
         p.mkdir(parents=True, exist_ok=True)
         return p
 
     def api_cache_dir(self) -> Path:
-        p = self.interim / "api_cache"
+        p = self.path("interim", shared=True) / "api_cache"   # shared across clades
         p.mkdir(parents=True, exist_ok=True)
         return p
 
@@ -127,23 +134,28 @@ class Config:
         return self.path("reports")
 
     def figures_dir(self) -> Path:
-        p = self.reports / "figures"
+        p = self.reports / "figures" / (self.output_subdir or "")
         p.mkdir(parents=True, exist_ok=True)
         return p
 
     def week4_figures_dir(self) -> Path:
         # a subdirectory, because scripts/08_sanity_report.py clears reports/figures/*.png on every run
-        p = self.reports / "figures" / "week4"
+        p = self.figures_dir() / "week4"
         p.mkdir(parents=True, exist_ok=True)
         return p
 
     def week5_figures_dir(self) -> Path:
-        p = self.reports / "figures" / "week5"
+        p = self.figures_dir() / "week5"
+        p.mkdir(parents=True, exist_ok=True)
+        return p
+
+    def week6_figures_dir(self) -> Path:
+        p = self.reports / "figures" / "week6"
         p.mkdir(parents=True, exist_ok=True)
         return p
 
     def tables_dir(self) -> Path:
-        p = self.reports / "tables"
+        p = self.reports / "tables" / (self.output_subdir or "")
         p.mkdir(parents=True, exist_ok=True)
         return p
 
@@ -152,10 +164,24 @@ class Config:
         return self.combos()[0]
 
 
-def load_config(path: str | os.PathLike | None = None) -> Config:
+def _deep_merge(base: dict[str, Any], over: dict[str, Any]) -> dict[str, Any]:
+    out = dict(base)
+    for k, v in over.items():
+        out[k] = _deep_merge(out[k], v) if isinstance(v, dict) and isinstance(out.get(k), dict) else v
+    return out
+
+
+def load_config(path: str | os.PathLike | None = None, clade: str | None = None) -> Config:
+    """Load config.yaml; `clade` (or LC_CLADE) names an entry of `clades` that is deep-merged over the defaults."""
     cfg_path = Path(path) if path else Path(os.environ.get("LC_CONFIG", DEFAULT_CONFIG))
     with open(cfg_path) as fh:
         data = yaml.safe_load(fh)
+    clade = clade or os.environ.get("LC_CLADE")
+    overlays = data.pop("clades", None) or {}
+    if clade:
+        if clade not in overlays:
+            raise KeyError(f"clade {clade!r} not in config clades: {sorted(overlays)}")
+        data = _deep_merge(data, overlays[clade])
     return Config(data=data, root=cfg_path.resolve().parent)
 
 
@@ -165,4 +191,5 @@ def base_parser(description: str):
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--config", default=None, help="path to config.yaml")
     parser.add_argument("--force", action="store_true", help="rebuild outputs even if cached")
+    parser.add_argument("--clade", default=None, help="entry of `clades` in config.yaml, e.g. mammalia (default: LC_CLADE, else the pilot)")
     return parser

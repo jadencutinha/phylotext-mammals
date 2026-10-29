@@ -9,7 +9,7 @@ def main() -> None:
     parser = base_parser("Download the Upham et al. 2019 MCC tree and extract target-clade tip labels.")
     parser.add_argument("--posterior", action="store_true", help="also download the full 10k-tree posterior zip (~1.2 GB)")
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     src = cfg["sources"]["tree"]
     tree_path = cfg.tree_path()
     tree_path.parent.mkdir(parents=True, exist_ok=True)

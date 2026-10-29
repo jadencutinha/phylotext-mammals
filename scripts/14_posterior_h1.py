@@ -27,7 +27,7 @@ def plot_posterior(table: pd.DataFrame, mcc_r: float, label: str, path) -> None:
 
 def main() -> None:
     args = base_parser("Robustness: repeat the primary H1 test on a pre-registered sample of posterior trees.").parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     apply_style()
     scfg = cfg["stats"]
     perms, seed, method = int(scfg["permutations"]), int(scfg["seed"]), scfg["method"]

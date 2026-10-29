@@ -54,7 +54,7 @@ def plot_null(result, label, path) -> None:
 
 def main() -> None:
     args = base_parser("H1: Mantel tests of text distance against phylogenetic distance.").parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     apply_style()
     scfg, ecfg = cfg["stats"], cfg["embedding"]
     perms, seed, primary_method = int(scfg["permutations"]), int(scfg["seed"]), scfg["method"]

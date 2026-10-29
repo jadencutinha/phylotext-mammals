@@ -12,7 +12,7 @@ from lineage_charisma.masking import MASK_LEVELS, Masker, build_vocabulary, leak
 
 def main() -> None:
     args = base_parser("Assemble the cleaned descriptions into one corpus table, flag stubs, and build the masked variants.").parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     out_corpus, out_stubs, out_terms = cfg.corpus_path(), cfg.stub_species_path(), cfg.mask_terms_path()
     if skip_if_cached([out_corpus, out_stubs, out_terms], args.force):
         return

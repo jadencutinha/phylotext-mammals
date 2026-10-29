@@ -173,7 +173,7 @@ def md_table(frame: pd.DataFrame, decimals: int = 3) -> str:
 
 def main() -> None:
     args = base_parser("Week 3 sanity report: nearest neighbours, family structure, mask levels, and figures.").parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     apply_style()
     ecfg, scfg = cfg["embedding"], cfg["week3_sanity"]
     k, quantile = scfg["k_neighbors"], scfg["near_neighbor_quantile"]

@@ -80,7 +80,7 @@ def main() -> None:
     parser.add_argument("--accept-residual", action="store_true",
                         help="go on even if more than traits.max_unmatched species lack a record in a trait database (after reviewing traits_residual_review.csv)")
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     order = read_species_order(cfg.species_order_path())
     species = read_csv(cfg.mdd_species_path())
     species = species[species["species"].isin(order)].reset_index(drop=True)
