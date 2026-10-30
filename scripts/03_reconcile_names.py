@@ -10,13 +10,13 @@ from lineage_charisma.wiki import WikiClient, resolve_species_titles
 MATCHED_COLUMNS = [
     "species", "tree_tip", "wiki_title", "match_method", "confidence",
     "wiki_validation", "wiki_source", "wiki_query", "wiki_qid", "matched_on", "tree_binomial",
-    "mdd_id", "family", "genus", "common_name", "extinct", "domestic",
+    "mdd_id", "order", "family", "genus", "common_name", "extinct", "domestic",
 ]
 RESIDUAL_COLUMNS = [
-    "species", "issue", "candidate_tip", "candidate_score", "wiki_title", "note", "mdd_id", "family", "common_name",
+    "species", "issue", "candidate_tip", "candidate_score", "wiki_title", "note", "mdd_id", "order", "family", "common_name",
 ]
 EXCLUDED_COLUMNS = [
-    "species", "reason", "nearest_tip", "nearest_score", "wiki_title", "note", "mdd_id", "family", "common_name", "extinct", "domestic",
+    "species", "reason", "nearest_tip", "nearest_score", "wiki_title", "note", "mdd_id", "order", "family", "common_name", "extinct", "domestic",
 ]
 
 
@@ -108,7 +108,7 @@ def main() -> None:
     for sp, a in result.assignments.items():
         row = info.loc[sp]
         w = wiki.get(sp, {})
-        base = dict(species=sp, mdd_id=row["mdd_id"], family=row["family"], common_name=row.get("common_name"))
+        base = dict(species=sp, mdd_id=row["mdd_id"], order=row["order"], family=row["family"], common_name=row.get("common_name"))
         if a.status == "matched" and w:
             matched.append({**base, **{k: v for k, v in w.items() if k != "wiki_rank"}, "tree_tip": a.tree_tip, "tree_binomial": a.tree_binomial,
                             "match_method": a.match_method, "confidence": a.confidence, "matched_on": a.matched_on,

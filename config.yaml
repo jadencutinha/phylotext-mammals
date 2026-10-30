@@ -9,6 +9,24 @@ clades:
   mammalia:
     target_clade: {rank: class, name: Mammalia}
     output_subdir: mammalia
+    masking:                     # full-scale rules (docs/preregistration_amendment_fullscale.md, Change 2)
+      head_noun_rule: final_noun # whole final word of a common name only; names whose last word is not the head noun give none
+      epithets_anywhere: false   # epithets masked only inside a binomial or an abbreviated one
+      name_ranks: [subclass, infraclass, magnorder, superorder, order, suborder, infraorder, parvorder, superfamily, family, subfamily, tribe]
+      extra_taxonomy_terms:      # the pilot's list, plus vernacular names of orders and higher clades (the pilot's "carnivoran")
+        [carnivoran, Pinnipedia, pinniped, Arctoidea, arctoid, Musteloidea, musteloid, Feloidea, feloid, Canoidea, canoid,
+         Nandinioidea, Arctocephalinae, Mungotinae, Vulpini, Canini, Lutrini,
+         monotreme, marsupial, placental, eutherian, metatherian, therian, xenarthran, afrotherian, afrothere,
+         primate, rodent, lagomorph, cetacean, chiropteran, artiodactyl, cetartiodactyl, perissodactyl, eulipotyphlan,
+         diprotodont, dasyuromorph, didelphimorph, peramelemorph, sirenian, proboscidean, hyracoid, afrosoricid, macroscelid, scandentian]
+      keep_terms:                # the pilot's list, plus words the rule still masks that are not taxon names in these texts
+        [canines, iceland,
+         tail, tails, head, heads, sides, human, humans,               # from "Plain Bare Tail", "Flounder's Head", "Snow Sides", "Human"
+         bull, bulls, cow, cows, buck, bucks, stag, stags,             # sex terms used for many species; from "Blue Bull", "Cow", "Marsh Buck", "Stag"
+         ounce, ounces, jack, digger, runner, runners, canary, pinyin, # units and words from "Ounce", "Saddle Jack", "Gray Digger", "Cloud Runner", "Sea Canary", "Chinese Pinyin"
+         fiber, fibers, boss, fossorial]                               # historical genus Fiber; "boss" is Bos + plural s; "fossorial" contains a genus name
+    traits:
+      include_volant: true       # adds COMBINE terrestrial_volant to the terrestrial-or-aquatic group; also writes ecology_no_volant.npy
 
 paths:
   raw: data/raw
@@ -96,6 +114,9 @@ masking:
   keep_terms: [canines, iceland]     # never masked: "canines" is almost always teeth; Iceland is a place
   keep_when_followed_by:
     canine: [tooth, teeth, tip]      # "canine teeth" stays; "a canine native to ..." is masked
+  head_noun_rule: pilot              # pilot: last word plus the last part of a hyphenated one ("Scaly-tail" -> tail); see masking.head_nouns
+  epithets_anywhere: true            # pilot: current species epithets are masked wherever they occur
+  name_ranks: [order, suborder, family, subfamily]   # MDD rank columns whose names (and derived forms) are masked
 
 embedding:
   models:                        # first entry is the primary model; add a line to add a model

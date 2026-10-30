@@ -7,7 +7,7 @@ import pandas as pd
 from lineage_charisma.config import base_parser, load_config
 from lineage_charisma.corpus import build_corpus, length_summary, load_texts, load_token_counter, stub_table, write_corpus
 from lineage_charisma.io_utils import read_csv, skip_if_cached, write_csv, write_meta
-from lineage_charisma.masking import MASK_LEVELS, Masker, build_vocabulary, leak_counts, term_leaks, text_column
+from lineage_charisma.masking import MASK_LEVELS, PILOT_NAME_RANKS, Masker, build_vocabulary, leak_counts, term_leaks, text_column
 
 
 def main() -> None:
@@ -32,6 +32,8 @@ def main() -> None:
         read_csv(cfg.mdd_species_path()), read_csv(cfg.mdd_synonyms_path()),
         extra_terms=mcfg.get("extra_taxonomy_terms", []), keep_terms=mcfg.get("keep_terms", []),
         keep_when_followed_by=mcfg.get("keep_when_followed_by", {}),
+        head_noun_rule=mcfg.get("head_noun_rule", "pilot"), epithets_anywhere=mcfg.get("epithets_anywhere", True),
+        name_ranks=mcfg.get("name_ranks", PILOT_NAME_RANKS),
     )
     masker = Masker(vocabulary, mcfg.get("token", "[TAXON]"))
     corpus = build_corpus(matched, texts, load_token_counter(ccfg["tokenizer"]), ccfg["min_tokens"], masker, levels)
