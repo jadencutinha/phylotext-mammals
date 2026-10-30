@@ -51,6 +51,16 @@ TRAITS: tuple[Trait, ...] = (
     Trait("log_body_mass", "body mass", CONTINUOUS, "combine", "adult_mass_g", "log10 of adult body mass in grams"),
 )
 
+# full scale only (docs/preregistration_amendment_fullscale.md, section 4): constant within Carnivora, so the pilot leaves it out
+VOLANT = Trait("volant", "terrestrial or aquatic", BINARY, "combine", "terrestrial_volant", "flies")
+
+
+def trait_list(include_volant: bool = False) -> tuple[Trait, ...]:
+    if not include_volant:
+        return TRAITS
+    i = max(k for k, t in enumerate(TRAITS) if t.group == VOLANT.group) + 1
+    return (*TRAITS[:i], VOLANT, *TRAITS[i:])
+
 
 def md5(path: Path) -> str:
     return hashlib.md5(Path(path).read_bytes()).hexdigest()
@@ -101,11 +111,12 @@ def reconcile_traits(species: pd.DataFrame, synonyms: pd.DataFrame | None, table
     return out[["species", "status", "source_name", "match_method", "confidence", "matched_on", "candidate_name", "candidate_score", "note"]]
 
 
-def build_trait_table(order: Sequence[str], elton: pd.DataFrame, combine: pd.DataFrame, elton_map: pd.DataFrame, combine_map: pd.DataFrame) -> pd.DataFrame:
+def build_trait_table(order: Sequence[str], elton: pd.DataFrame, combine: pd.DataFrame, elton_map: pd.DataFrame, combine_map: pd.DataFrame,
+                      traits: Sequence[Trait] = TRAITS) -> pd.DataFrame:
     """One row per species in `order`, one column per pre-registered trait; NaN where a database has no record or no value."""
     sources = {"elton": (elton.set_index("source_name"), elton_map), "combine": (combine.set_index("source_name"), combine_map)}
     out = pd.DataFrame(index=pd.Index(order, name="species_id"))
-    for trait in TRAITS:
+    for trait in traits:
         table, mapping = sources[trait.source]
         matched = mapping[mapping["status"] == "matched"].set_index("species")["source_name"]
         names = matched.reindex(order)

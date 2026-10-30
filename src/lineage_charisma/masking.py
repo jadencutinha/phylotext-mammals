@@ -12,6 +12,10 @@ DEFAULT_TOKEN = "[TAXON]"
 COMPOUND_MIN_LENGTH = 6
 
 _WORD = re.compile(r"[A-Za-z]+(?:-[A-Za-z]+)*")
+_LETTERS = re.compile(r"[^\W\d_]+(?:-[^\W\d_]+)*")   # any script's letters: "Perú" stays one word
+_PREPOSITION = re.compile(r"\b(?:de|del|do|da|dos|das|of|des|du|la|le)\b", re.IGNORECASE)
+HEAD_NOUN_RULES = ("pilot", "final_noun")
+PILOT_NAME_RANKS = ("order", "suborder", "family", "subfamily")
 _ABBREVIATED = re.compile(r"\b([A-Z])\.\s?(?:[a-z]\.\s?)?([a-z]+)((?:\s+[a-z]+)?)")
 _NEXT_WORD = re.compile(r"[\s-]*([A-Za-z]+)")
 
@@ -31,6 +35,8 @@ def derived_terms(name: str) -> set[str]:
         return {low[:-4] + "ine"}
     if low.endswith("formia"):
         return {low[:-2]}
+    if low.endswith("oidea"):
+        return {low[:-2]}    # Muroidea -> muroid (no pilot rank ends in -oidea)
     return set()
 
 
@@ -47,19 +53,30 @@ def plural_forms(noun: str) -> set[str]:
     return forms
 
 
-def head_nouns(common_names: Iterable[object]) -> set[str]:
-    """Last word of each common name ("Short-eared Dog" -> dog), plus the last part of a hyphenated one."""
+def head_nouns(common_names: Iterable[object], rule: str = "pilot") -> set[str]:
+    """The strict-level nouns taken from common names.
+
+    `pilot`: the last word of each name ("Short-eared Dog" -> dog) plus the last part of a hyphenated one
+    ("Scaly-tail" -> scaly-tail and tail), ASCII letters only.
+    `final_noun` (full scale): the whole last word only, in any script, and nothing from names such as
+    "Tuco-tuco of the Dunes" or "Hocicudo de Azara" whose last word is not their head noun.
+    """
+    if rule not in HEAD_NOUN_RULES:
+        raise ValueError(f"unknown head noun rule {rule!r}; expected one of {HEAD_NOUN_RULES}")
     nouns: set[str] = set()
     for cell in common_names:
         if not isinstance(cell, str):
             continue
         for name in cell.split("|"):
-            words = _WORD.findall(name)
+            if rule == "final_noun" and _PREPOSITION.search(name):
+                continue
+            words = (_WORD if rule == "pilot" else _LETTERS).findall(name)
             if not words:
                 continue
             last = words[-1].lower()
             nouns.add(last)
-            nouns.add(last.split("-")[-1])
+            if rule == "pilot":
+                nouns.add(last.split("-")[-1])
     return {n for n in nouns if len(n) >= 3}
 
 
@@ -73,6 +90,7 @@ class MaskVocabulary:
     head_nouns: frozenset[str]         # strict level only, plural forms included
     keep_terms: frozenset[str] = frozenset()
     keep_when_followed_by: Mapping[str, frozenset[str]] = field(default_factory=dict)
+    epithets_anywhere: bool = True     # pilot: current epithets masked wherever they occur; full scale: only inside a (possibly abbreviated) binomial
 
 
 def build_vocabulary(
@@ -81,18 +99,23 @@ def build_vocabulary(
     extra_terms: Iterable[str] = (),
     keep_terms: Iterable[str] = (),
     keep_when_followed_by: Mapping[str, Iterable[str]] | None = None,
+    head_noun_rule: str = "pilot",
+    epithets_anywhere: bool = True,
+    name_ranks: Iterable[str] = PILOT_NAME_RANKS,
 ) -> MaskVocabulary:
     genera = {str(g).lower() for g in species["genus"].dropna()}
     nouns: set[str] = set()
     for col in ("common_name", "other_common_names"):
         if col in species.columns:
-            nouns |= head_nouns(species[col])
+            nouns |= head_nouns(species[col], rule=head_noun_rule)
     epithets = {str(e).lower() for e in species["specific_epithet"].dropna()}
     binomial_epithets = set(epithets)
     names = set(genera)
-    for col in ("order", "suborder", "family", "subfamily"):
+    for col in name_ranks:
         if col in species.columns:
             for value in species[col].dropna().astype(str):
+                if value.lower() == "incertae sedis":
+                    continue
                 names.add(value.lower())
                 names |= derived_terms(value)
     if synonyms is not None:
@@ -116,10 +139,36 @@ def build_vocabulary(
         head_nouns=frozenset(form for noun in nouns for form in plural_forms(noun)),
         keep_terms=frozenset(str(t).lower() for t in keep_terms),
         keep_when_followed_by={str(k).lower(): frozenset(str(v).lower() for v in vs) for k, vs in (keep_when_followed_by or {}).items()},
+        epithets_anywhere=epithets_anywhere,
     )
 
 
 def _alternation(terms: Iterable[str]) -> str:
+    """A regex matching any of `terms`, written as a trie.
+
+    It matches exactly what the plain alternation sorted longest first would match, with the same
+    backtracking to shorter terms, but does not try every term at every position, which matters
+    once the vocabulary covers all mammals.
+    """
+    trie: dict = {}
+    for term in terms:
+        node = trie
+        for ch in term:
+            node = node.setdefault(ch, {})
+        node[""] = {}
+
+    def build(node: dict) -> str:
+        children = [re.escape(ch) + build(sub) for ch, sub in sorted(node.items()) if ch]
+        if not children:
+            return ""
+        body = children[0] if len(children) == 1 else "(?:" + "|".join(children) + ")"
+        return f"(?:{body})?" if "" in node else body
+
+    return build(trie)
+
+
+def _plain_alternation(terms: Iterable[str]) -> str:
+    """The original longest-first alternation; kept for the equivalence test."""
     return "|".join(re.escape(t) for t in sorted(terms, key=lambda t: (-len(t), t)))
 
 
@@ -130,7 +179,7 @@ class Masker:
         v = vocabulary
         self._names = re.compile(rf"\b(?P<name>(?i:{_alternation(v.names)}))(?P<plural>e?s)?\b(?P<tail>(?:\s+[a-z]+){{0,2}})") if v.names else None
         self._compounds = re.compile(rf"\b[A-Za-z]*(?i:{_alternation(v.compound_names)})[A-Za-z]*\b") if v.compound_names else None
-        self._epithets = re.compile(rf"\b(?i:{_alternation(v.epithets)})s?\b") if v.epithets else None
+        self._epithets = re.compile(rf"\b(?i:{_alternation(v.epithets)})s?\b") if v.epithets and v.epithets_anywhere else None
         self._nouns = re.compile(rf"\b(?i:{_alternation(v.head_nouns)})\b") if v.head_nouns else None
         self._collapse = re.compile(rf"{re.escape(token)}(?:[\s-]+{re.escape(token)})+")
 

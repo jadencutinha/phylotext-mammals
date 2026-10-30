@@ -38,7 +38,8 @@ def main() -> None:
     print(f"[tree] {n_leaves} leaves, {len(tips)} parsed as Genus_species_FAMILY_ORDER")
 
     species = read_csv(cfg.mdd_species_path())
-    orders = sorted(species["order"].dropna().str.upper().unique())
+    # a class-level clade keeps every tip: the tree's order labels differ from MDD's (CETARTIODACTYLA vs Artiodactyla)
+    orders = None if cfg.clade_rank == "class" else sorted(species["order"].dropna().str.upper().unique())
     clade_tips = filter_tips(tips, orders=orders)
     write_csv(tips, all_tips_path, tree_file=tree_path.name)
     write_csv(clade_tips, clade_tips_path, tree_file=tree_path.name, orders=orders)

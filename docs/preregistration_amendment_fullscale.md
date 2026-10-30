@@ -114,4 +114,30 @@ These are labelled exploratory in tables, figures and the report. None of them b
 
 ## 11. Changes
 
-None yet. The frozen species count and the list of orders with at least 50 species will be added here before any test is run.
+### Change 1 (2026-10-30, before the species set was frozen and before any embedding or test): residual rule for tree matches
+
+**What had been seen:** the reconciliation output (`matched.csv`, `residual_review.csv`, `excluded_species.csv`) and the Wikipedia texts fetched so far. No embedding, distance matrix or test existed.
+
+**Why:** at full scale the engine's epithet-within-family rule makes wrong matches across genera within large families (for example *Calomys miurus* to the tip *Microtus miurus*, *Acomys selousi* to *Grammomys selousi*, *Sorex obscurus* to *Cryptotis obscura*). This replaces the fuzzy-acceptance sentence in section 3, step 2.
+
+**Rule** (`scripts/03b_residual_rules.py`): a tree match is accepted without review only if the engine made it by exact name, MSW3/CMW legacy name, or MDD synonym. Every other automatic match (fuzzy, epithet within family, Wikipedia bridge) goes to `residual_review.csv` and is excluded under section 3, unless the pilot hand-reviewed the same match to the same tip. This exception applies to two species, *Canis lupaster* and *Otaria flavescens*, and keeps all 284 pilot species for the replication check. This moved 16 species: 12 epithet within family, 3 fuzzy and 1 Wikipedia bridge. A random sample of 50 accepted matches, stratified by method (seed 20261004), is in `data/interim/mammalia/match_spotcheck_sample.csv` for manual checking.
+
+### Change 2 (2026-10-30, before the species set was frozen and before any embedding or test): masking rules at full scale
+
+**What had been seen:** the terms that the pilot rules mask in the Wikipedia texts fetched so far (about 3,400 species), counted by term. No embedding, distance matrix or test existed.
+
+**Why:** with the all-mammal vocabulary, the pilot rules mask common English words. Examples: "tail" (about 3,000 times), "head", "two", "top" and "grass", which come from rare alternative common names such as "Cameroon Scaly-tail", "Hard-head", "One-Two", "Steeple-top" and "Cutting-grass". They also mask epithets used as ordinary words ("major", "minor", "comes", "niger", "papua"). This replaces "by the same procedure" in section 4. The pilot's own masking is unchanged (`config.yaml` keeps the pilot rules as defaults), so the exact replication in section 6a is unaffected. The difference the full-scale rules make on the pilot texts is part of the vocabulary effect measured in section 6b.
+
+**Rules** (`clades.mammalia.masking` in `config.yaml`, `src/lineage_charisma/masking.py`):
+
+1. **Head nouns** (strict level): the whole final word of each MDD common name, in any script. A hyphenated final word is kept whole ("scaly-tail", not "tail"). Names containing a preposition (de, del, do, da, dos, das, of, des, du, la, le) give no head noun, because their final word is not the head noun ("Tuco-tuco of the Dunes", "Hocicudo de Azara"). Modifiers ("long-tailed", "greater") are never masked as such.
+2. **Epithets**: masked only inside a binomial or an abbreviated binomial ("Panthera leo", "P. leo"), not wherever they occur. The pilot masked current epithets anywhere.
+3. **Higher-rank names**: names from every MDD rank column (subclass, infraclass, magnorder, superorder, order, suborder, infraorder, parvorder, superfamily, family, subfamily, tribe), with derived forms (-idae to -id and -ine, -inae to -ine, -oidea to -oid). In the pilot, these names were hand-listed for Carnivora only.
+4. **Vernacular names of orders and higher clades**: an explicit list, the full-scale counterpart of the pilot's "carnivoran" (marsupial, primate, rodent, cetacean, lagomorph and others; listed in `config.yaml`).
+5. **`keep_terms`**: an explicit list for words that rules 1 to 4 still mask but are not taxon names in these texts. These are body-part and generic words from one-off alternative names (tail, head, sides, human); sex terms used for many species (bull, cow, buck, stag); a few others (ounce, jack, digger, runner, canary, pinyin); the historical genus *Fiber*; "boss" (Bos plus a plural s); and "fossorial", which contains a genus name. Plural forms are listed with each.
+
+**Effect on the texts fetched so far** (3,410 species, strict level): rules 1 and 2 unmask 284 terms (2,899 occurrences); rules 3 and 4 newly mask 39 terms (485 occurrences); `keep_terms` unmasks 27 terms (5,782 occurrences). The guard that fails if any masked text still contains its own genus name is unchanged. These counts are updated on the full corpus when the species set is frozen.
+
+### Frozen species set
+
+To be added when `data/processed/mammalia/matrices/species_order.txt` is written: the species count and the orders with at least 50 species.

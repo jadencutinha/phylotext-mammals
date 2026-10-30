@@ -171,3 +171,20 @@ def test_real_corpus_has_no_own_genus_in_masked_text(level):
     leaking = [s for s, t in zip(corpus["species_id"], corpus[text_column(level)]) if term_leaks(t, s.split()[0])]
     assert leaking == []
     assert sum(term_leaks(t, s.split()[0]) for s, t in zip(corpus["species_id"], corpus["text"])) > 0.9 * len(corpus)
+
+
+def test_trie_alternation_matches_plain_alternation():
+    import random
+    import re
+
+    from lineage_charisma.masking import _alternation, _plain_alternation
+
+    rng = random.Random(0)
+    terms = {"cat", "cats", "catamount", "ca", "dog", "do", "dogfish", "a-b", "tree-kangaroo", "tree", "x.y"}
+    terms |= {"".join(rng.choice("abc") for _ in range(rng.randint(1, 5))) for _ in range(200)}
+    trie = re.compile(rf"\b(?i:{_alternation(terms)})(?:e?s)?\b")
+    plain = re.compile(rf"\b(?i:{_plain_alternation(terms)})(?:e?s)?\b")
+    texts = ["the catamount and cats; a dogfish, Tree-kangaroo trees x.y", *(" ".join(rng.choice(sorted(terms)) + rng.choice(["", "s", "es", "x"])
+             for _ in range(30)) for _ in range(50))]
+    for text in texts:
+        assert [m.span() for m in trie.finditer(text)] == [m.span() for m in plain.finditer(text)]

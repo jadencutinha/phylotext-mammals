@@ -1,0 +1,25 @@
+{
+  "file": "species_by_order.csv",
+  "sha256": "19bce849a7111b6416c652348f27e9c9f99fc40c0943afd19b38b69848e45893",
+  "bytes": 1863,
+  "created_utc": "2026-10-30T14:23:17+00:00",
+  "rows": 27,
+  "columns": [
+    "order",
+    "mdd_species",
+    "excluded_extinct_or_domestic_no_tip",
+    "excluded_no_tree_tip",
+    "residual_ambiguous_tree_match",
+    "residual_no_validated_wikipedia_article",
+    "residual_unreviewed_epithet_in_family",
+    "residual_unreviewed_fuzzy",
+    "residual_unreviewed_wiki_bridge",
+    "matched_with_article",
+    "stubs",
+    "frozen_species",
+    "frozen_share_of_mdd",
+    "in_per_order_analyses"
+  ],
+  "n_frozen": 4612,
+  "min_order_size": 50
+}

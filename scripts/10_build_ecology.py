@@ -10,6 +10,7 @@ from lineage_charisma.io_utils import atomic_write_text, download, is_cached, re
 from lineage_charisma.stats import submatrix
 from lineage_charisma.traits import (
     TRAITS,
+    Trait,
     build_trait_table,
     complete_species,
     gower_distance,
@@ -18,11 +19,14 @@ from lineage_charisma.traits import (
     md5,
     missing_rates,
     reconcile_traits,
+    trait_list,
     trait_weights,
 )
 
 DATABASES = {"elton": ("elton_traits", load_elton, "EltonTraits 1.0"), "combine": ("combine", load_combine, "COMBINE")}
 MATRICES = {"group": "ecology.npy", "column": "ecology_unweighted.npy"}
+VOLANT_COLUMN = "volant"
+NO_VOLANT_MATRIX = "ecology_no_volant.npy"   # group-weighted without `volant`; written only when traits.include_volant is set
 
 
 def fetch(cfg, key: str, force: bool):
@@ -40,9 +44,9 @@ def fetch(cfg, key: str, force: bool):
     return path
 
 
-def traits_doc(table: pd.DataFrame, rates: pd.DataFrame, shared: dict[str, np.ndarray], n_complete: int) -> str:
-    weights = {w: trait_weights(TRAITS, w) / trait_weights(TRAITS, w).sum() for w in MATRICES}
-    desc = {t.column: t.description for t in TRAITS}
+def traits_doc(table: pd.DataFrame, rates: pd.DataFrame, shared: dict[str, np.ndarray], n_complete: int, traits: tuple[Trait, ...] = TRAITS) -> str:
+    weights = {w: trait_weights(traits, w) / trait_weights(traits, w).sum() for w in MATRICES}
+    desc = {t.column: t.description for t in traits}
     out = ["# Ecological traits", "",
            "Written by `scripts/10_build_ecology.py`; do not edit by hand. The trait list is fixed in `docs/preregistration.md` (section 7 and amendment A1.1) "
            "and in `TRAITS` in `src/lineage_charisma/traits.py`.", "",
@@ -51,7 +55,7 @@ def traits_doc(table: pd.DataFrame, rates: pd.DataFrame, shared: dict[str, np.nd
            "- **COMBINE** (Soria et al. 2021, *Ecology* 102:e03344), `trait_data_reported.csv`: habitat breadth, terrestrial or aquatic, body mass. "
            "This is the file of reported values. COMBINE's imputed file is not used.", "",
            "## Traits", "",
-           f"{len(TRAITS)} columns in {len(set(t.group for t in TRAITS))} groups, for {len(table)} species. "
+           f"{len(traits)} columns in {len(set(t.group for t in traits))} groups, for {len(table)} species. "
            "\"Weight\" is each column's share of the distance when a pair has every trait: equal by group in the primary matrix, equal by column in the robustness variant.", "",
            "| column | group | type | source | source column | meaning | group weight | column weight | missing | missing rate |",
            "|---|---|---|---|---|---|---:|---:|---:|---:|"]
@@ -64,7 +68,9 @@ def traits_doc(table: pd.DataFrame, rates: pd.DataFrame, shared: dict[str, np.nd
             "- A pair's distance is the weighted mean of those contributions over the traits both species have (Gower's pairwise-available rule). Nothing is imputed.",
             "- `ecology.npy` weights the six groups equally (primary). `ecology_unweighted.npy` weights every column equally (robustness variant).",
             "- Body mass is log10 of `adult_mass_g`. The three activity flags are not exclusive: a species can be both nocturnal and crepuscular.",
-            "- `terrestrial_volant` in COMBINE is 0 for every Carnivora species that has a value and is not used.", "",
+            ("- `volant` is COMBINE's `terrestrial_volant` (full scale only, docs/preregistration_amendment_fullscale.md section 4). "
+             f"`{NO_VOLANT_MATRIX}` is the group-weighted matrix without it, a declared robustness variant."
+             if VOLANT_COLUMN in desc else "- `terrestrial_volant` in COMBINE is 0 for every Carnivora species that has a value and is not used."), "",
             "## Coverage", "",
             f"{n_complete} of {len(table)} species have an ecological distance to each other and are in the matrices (`ecology_species.txt`). "
             f"{int(table.notna().all(axis=1).sum())} species have every trait."]
@@ -82,6 +88,7 @@ def main() -> None:
     args = parser.parse_args()
     cfg = load_config(args.config, args.clade)
     order = read_species_order(cfg.species_order_path())
+    traits = trait_list(bool(cfg["traits"].get("include_volant", False)))
     species = read_csv(cfg.mdd_species_path())
     species = species[species["species"].isin(order)].reset_index(drop=True)
     synonyms = read_csv(cfg.mdd_synonyms_path())
@@ -119,14 +126,14 @@ def main() -> None:
         raise SystemExit(f"[traits] stopping: {len(unreviewed)} unreviewed unmatched species is more than traits.max_unmatched = {limit}: {unreviewed}. "
                          "Review the list, then add them to traits.reviewed_missing in config.yaml or rerun with --accept-residual (make ecology ACCEPT_RESIDUAL=1).")
 
-    table = build_trait_table(order, tables["elton"], tables["combine"], maps["elton"], maps["combine"])
-    rates = missing_rates(table)
+    table = build_trait_table(order, tables["elton"], tables["combine"], maps["elton"], maps["combine"], traits)
+    rates = missing_rates(table, traits)
     write_csv(table.reset_index(), cfg.processed / "traits.csv")
     write_csv(rates, cfg.tables_dir() / "ecology_missing.csv", n_species=len(order))
 
     dist, shared = {}, {}
     for weighting in MATRICES:
-        dist[weighting], shared[weighting] = gower_distance(table, TRAITS, weighting)
+        dist[weighting], shared[weighting] = gower_distance(table, traits, weighting)
     # which pairs share a trait does not depend on the weights, so one species set serves both matrices
     complete = complete_species(dist["group"], order)
     dropped = sorted(set(order) - set(complete))
@@ -136,11 +143,21 @@ def main() -> None:
         print(f"[ecology] {len(dropped)} species have no ecological distance to some other species and are left out: {dropped}")
     for weighting, filename in MATRICES.items():
         matrix = submatrix(dist[weighting], order, complete)
-        save_matrix(cfg.matrices_dir() / filename, matrix, complete, kind="gower", weighting=weighting, traits=[t.column for t in TRAITS], dropped_species=dropped)
+        save_matrix(cfg.matrices_dir() / filename, matrix, complete, kind="gower", weighting=weighting, traits=[t.column for t in traits], dropped_species=dropped)
         off = matrix[np.triu_indices(len(complete), k=1)]
         print(f"[ecology] {filename}: {len(complete)} species, mean distance {off.mean():.3f}, max {off.max():.3f}")
+    if traits != TRAITS:
+        variant, _ = gower_distance(table, TRAITS, "group")
+        matrix = submatrix(variant, order, complete)
+        off = matrix[np.triu_indices(len(complete), k=1)]
+        if np.isnan(off).any():
+            raise SystemExit(f"[ecology] {NO_VOLANT_MATRIX}: {int(np.isnan(off).sum())} pairs of ecology_species.txt share no trait once `volant` is left out")
+        save_matrix(cfg.matrices_dir() / NO_VOLANT_MATRIX, matrix, complete, kind="gower", weighting="group", traits=[t.column for t in TRAITS],
+                    dropped_species=dropped, role="robustness variant: ecology without volant")
+        print(f"[ecology] {NO_VOLANT_MATRIX}: {len(complete)} species, mean distance {off.mean():.3f}, max {off.max():.3f}")
 
-    atomic_write_text(cfg.root / "docs" / "ecology_traits.md", traits_doc(table, rates, shared, len(complete)))
+    doc_name = f"ecology_traits_{cfg.output_subdir}.md" if cfg.output_subdir else "ecology_traits.md"
+    atomic_write_text(cfg.root / "docs" / doc_name, traits_doc(table, rates, shared, len(complete), traits))
     print("[ecology] missing data per trait:")
     print(rates[["trait", "n_missing", "missing_rate"]].to_string(index=False, float_format=lambda v: f"{v:.1%}"))
 
