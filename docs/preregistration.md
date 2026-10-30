@@ -128,3 +128,7 @@ The 277-species `matrices_min100/` set stays exploratory.
 ### Amendment 2 (2026-10-09, before any H2 results)
 
 The H2 plan (partial Mantel tests and MRM, decision rules, robustness and exploratory analyses) is in `docs/preregistration_amendment_h2.md`, committed before any of those analyses was run on the project's data.
+
+### Amendment 3 (2026-10-29, before any full-scale results)
+
+The full-scale plan for all mammals (species set, replication check, per-order breakdowns, robustness at full scale and exploratory analyses) is in `docs/preregistration_amendment_fullscale.md`, committed before any full-scale species set, matrix or test existed.
