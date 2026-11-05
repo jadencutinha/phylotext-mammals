@@ -97,6 +97,11 @@ def main() -> None:
     for name, (key, loader, _) in DATABASES.items():
         tables[name] = loader(fetch(cfg, key, args.force))
         maps[name] = reconcile_traits(species, synonyms, tables[name], cfg["matching"])
+        if accepted := cfg["traits"].get("auto_accept_methods"):
+            # full scale (amendment 3, Change 1): matches by other rules count as missing, not as a record
+            rejected = (maps[name]["status"] == "matched") & ~maps[name]["match_method"].isin(accepted)
+            maps[name].loc[rejected, "note"] = "matched by " + maps[name].loc[rejected, "match_method"] + "; treated as missing at full scale"
+            maps[name].loc[rejected, "status"] = "no_tip"
         counts = maps[name]["match_method"].value_counts().to_dict()
         print(f"[traits] {name}: {int((maps[name]['status'] == 'matched').sum())}/{len(order)} species matched {counts}")
 

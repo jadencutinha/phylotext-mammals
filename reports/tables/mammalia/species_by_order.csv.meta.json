@@ -1,8 +1,8 @@
 {
   "file": "species_by_order.csv",
-  "sha256": "19bce849a7111b6416c652348f27e9c9f99fc40c0943afd19b38b69848e45893",
-  "bytes": 1863,
-  "created_utc": "2026-10-30T14:23:17+00:00",
+  "sha256": "a05509b4ff1f356794c9595424b7b3b68472dcc646c073912094972d9e2e3a05",
+  "bytes": 1957,
+  "created_utc": "2026-11-05T17:36:04+00:00",
   "rows": 27,
   "columns": [
     "order",
@@ -14,12 +14,13 @@
     "residual_unreviewed_epithet_in_family",
     "residual_unreviewed_fuzzy",
     "residual_unreviewed_wiki_bridge",
+    "residual_unreviewed_wiki_synonym_title",
     "matched_with_article",
     "stubs",
     "frozen_species",
     "frozen_share_of_mdd",
     "in_per_order_analyses"
   ],
-  "n_frozen": 4612,
+  "n_frozen": 4611,
   "min_order_size": 50
 }

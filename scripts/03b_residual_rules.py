@@ -20,9 +20,12 @@ def main() -> None:
 
     reviewed = matched["species"].map(pilot).eq(matched["tree_tip"])
     move = ~matched["match_method"].isin(AUTO_ACCEPT) & ~reviewed
+    # Change 1: a Wikipedia title found only by querying an MDD synonym is not validated as the species article
+    wiki_synonym = matched["wiki_source"].eq("synonym") & ~reviewed
+    move |= wiki_synonym
     kept_by_pilot = matched[~matched["match_method"].isin(AUTO_ACCEPT) & reviewed]
     moved = matched[move].assign(
-        issue="unreviewed_" + matched.loc[move, "match_method"],
+        issue=("unreviewed_" + matched.loc[move, "match_method"]).where(~wiki_synonym[move], "unreviewed_wiki_synonym_title"),
         candidate_tip=matched.loc[move, "tree_tip"],
         candidate_score=matched.loc[move, "confidence"],
         note="auto-accepted by the engine; full-scale rule sends non-exact, non-synonym matches to review",
