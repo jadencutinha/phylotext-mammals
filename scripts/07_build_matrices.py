@@ -58,8 +58,14 @@ def main() -> None:
         print(f"[cache] {len(outputs)} matrices in {out_dir.relative_to(cfg.root)} are up to date, skipping (use --force to rebuild)")
         return
 
-    write_species_order(order_path, order)
-    print(f"[matrices] canonical order: {len(order)} species -> {order_path.relative_to(cfg.root)}")
+    if cfg.output_subdir and not args.sensitivity:
+        # full scale: species_order.txt is frozen and committed before any matrix exists (amendment 3, section 3)
+        if not order_path.exists() or read_species_order(order_path) != order:
+            raise SystemExit(f"[matrices] the non-stub corpus species differ from the frozen {order_path.relative_to(cfg.root)}; nothing written")
+        print(f"[matrices] canonical order: {len(order)} species, matches the frozen {order_path.relative_to(cfg.root)}")
+    else:
+        write_species_order(order_path, order)
+        print(f"[matrices] canonical order: {len(order)} species -> {order_path.relative_to(cfg.root)}")
 
     tree = load_tree(tree_path)
     tips = {leaf.taxon.label for leaf in tree.leaf_node_iter()}

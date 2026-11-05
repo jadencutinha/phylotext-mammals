@@ -125,8 +125,10 @@ class Config:
         return list((self.data.get("masking") or {}).get("levels") or ["none"])
 
     def combos(self) -> list[tuple[str, str, str]]:
-        """Every (model, rule, mask level); the first is the primary combination."""
+        """Every (model, rule, mask level), or the explicit `embedding.combos` list if set; the first is the primary combination."""
         emb = self.data["embedding"]
+        if emb.get("combos"):
+            return [tuple(c) for c in emb["combos"]]
         return [(m, r, k) for k in self.mask_levels for m in emb["models"] for r in emb["rules"]]
 
     @property

@@ -1,0 +1,16 @@
+{
+  "6a": {
+    "pilot_species_missing_from_full_scale_matches": [],
+    "pilot_species_with_a_different_tip_or_article": [],
+    "masked_texts_identical_to_pilot_corpus": "284/284",
+    "max_abs_embedding_difference": 0.0,
+    "phylo_identical_to_pilot": true,
+    "r_exact_difference": 6.938893903907228e-17
+  },
+  "6b": {
+    "pilot_species_missing_from_frozen_set": [],
+    "phylo_max_abs_difference": 0.0,
+    "pilot_texts_changed_by_full_scale_masks": 94,
+    "threshold": 0.01
+  }
+}

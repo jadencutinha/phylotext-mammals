@@ -28,6 +28,12 @@ clades:
     traits:
       include_volant: true       # adds COMBINE terrestrial_volant to the terrestrial-or-aquatic group; also writes ecology_no_volant.npy
       auto_accept_methods: [exact, legacy_name, synonym]   # other trait-name matches count as missing (amendment 3, Change 1)
+    embedding:
+      combos:                    # amendment 3, section 8: the primary spec plus the three registered variants, not the 12-variant grid
+        - [BAAI/bge-large-en-v1.5, chunk, strict]
+        - [sentence-transformers/all-mpnet-base-v2, chunk, strict]
+        - [BAAI/bge-large-en-v1.5, truncate, strict]
+        - [BAAI/bge-large-en-v1.5, chunk, taxonomy]
 
 paths:
   raw: data/raw

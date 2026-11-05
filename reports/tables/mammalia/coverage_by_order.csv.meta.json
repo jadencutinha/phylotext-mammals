@@ -1,0 +1,46 @@
+{
+  "file": "coverage_by_order.csv",
+  "sha256": "280b6494fcd8c21a06457ebe082a854e0aacd4343bf73e8420c74e18884a06db",
+  "bytes": 1295,
+  "created_utc": "2026-11-05T17:48:14+00:00",
+  "rows": 27,
+  "columns": [
+    "order",
+    "n_species",
+    "with_elton_record",
+    "with_combine_record",
+    "all_traits",
+    "no_traits",
+    "in_ecology_species",
+    "with_pageviews",
+    "viewed_every_month",
+    "median_of_median_monthly_pageviews"
+  ],
+  "n_species": 4611,
+  "traits": [
+    "diet_inv",
+    "diet_vend",
+    "diet_vect",
+    "diet_vfish",
+    "diet_vunk",
+    "diet_scav",
+    "diet_fruit",
+    "diet_nect",
+    "diet_seed",
+    "diet_planto",
+    "foraging_stratum",
+    "activity_nocturnal",
+    "activity_crepuscular",
+    "activity_diurnal",
+    "habitat_breadth",
+    "terrestrial",
+    "marine",
+    "freshwater",
+    "volant",
+    "log_body_mass"
+  ],
+  "pageview_window": [
+    "2023-01",
+    "2025-12"
+  ]
+}

@@ -2,7 +2,9 @@
 
 Does text-embedding similarity between mammal species descriptions recover the evolutionary tree, or does it mainly reflect human attention and charisma? This repo compares a text-distance matrix (from Wikipedia description embeddings) with a phylogenetic-distance matrix (from the Upham et al. 2019 mammal tree) using Mantel and partial Mantel tests.
 
-**Current state: Week 5. The analysis is pre-registered in [`docs/preregistration.md`](docs/preregistration.md) and its H2 amendment [`docs/preregistration_amendment_h2.md`](docs/preregistration_amendment_h2.md). H1 (Week 4, [`reports/week4_report.md`](reports/week4_report.md)) and H2 (partial Mantel tests and MRM, [`reports/week5_report.md`](reports/week5_report.md)) have been run on Carnivora.** On the primary specification the text–phylogeny correlation is small (r = 0.035 on 283 species) and is not significant after controlling for ecology and article length (partial r = 0.020, p = 0.13), while keeping more than half its size; the Week 5 report has the robustness results and the plan for scaling to all mammals. The target clade is set in `config.yaml` (currently order Carnivora). No code names a clade directly, so moving to all mammals only means changing `target_clade`.
+**Current state: Week 6. The analysis is pre-registered in [`docs/preregistration.md`](docs/preregistration.md), its H2 amendment [`docs/preregistration_amendment_h2.md`](docs/preregistration_amendment_h2.md), and the full-scale amendment [`docs/preregistration_amendment_fullscale.md`](docs/preregistration_amendment_fullscale.md). H1 and H2 have been run on the Carnivora pilot ([`reports/week4_report.md`](reports/week4_report.md), [`reports/week5_report.md`](reports/week5_report.md)) and on all mammals ([`reports/week6_report.md`](reports/week6_report.md)).** In the pilot the text–phylogeny correlation is small (r = 0.033 on 284 species) and not significant after controlling for ecology and article length (partial r = 0.020, p = 0.13). At full scale (4,611 species) the primary correlation is slightly negative (r = −0.028), so H1 is not supported and H2 rule (a) fails. Within bats, primates and artiodactyls it is clearly positive, and with common-name head nouns left unmasked it is r = 0.19. In both sets, popular species pairs are described more alike and the tree signal is stronger among obscure species.
+
+The pilot is the default configuration (order Carnivora). Every script also takes `--clade mammalia` (or `make ... CLADE=mammalia`), which deep-merges `clades.mammalia` in `config.yaml` over the defaults and writes to `mammalia/` subdirectories of `data/interim`, `data/processed` and `reports/tables`.
 
 ## Setup
 
@@ -44,6 +46,14 @@ The first `make embed` downloads the two embedding models from the Hugging Face 
 | 16 | `make exploratory` → `scripts/16_exploratory.py` | primary text matrix, phylogenetic and control matrices | `reports/tables/exploratory_well_known.csv`, `exploratory_nonlinear.csv`, `reports/figures/week5/exploratory_*.png` |
 | 17 | `make report5` → `scripts/17_week5_report.py` | the Week 5 tables, `reports/week5_notes.md` | `reports/week5_report.md` |
 | 18 | `scripts/18_scaling_benchmark.py` (run by hand) | none (random matrices at full-mammal size), the embedding models | `reports/tables/scaling_benchmark.csv` |
+| 3b | `scripts/03b_residual_rules.py --clade mammalia` | full-scale `matched.csv` | moves non-exact, non-synonym tree matches and synonym-only Wikipedia titles to `residual_review.csv` (amendment 3, Change 1) |
+| 19 | `scripts/19_freeze_species.py --clade mammalia` (`--candidate` to preview) | full-scale corpus, matches | `data/processed/mammalia/matrices/species_order.txt` (frozen), `species_by_order.csv`, `stubs_by_order.csv`, `reports/figures/week6/stubs_by_order.png` |
+| 20 | `scripts/20_coverage_by_order.py --clade mammalia` | traits, attention, frozen order | `coverage_by_order.csv`, `trait_missing_rate_by_order.csv` |
+| 21 | `scripts/21_replication.py` | pilot and full-scale outputs | `replication.csv`, `replication_mask_terms.csv`, `replication_notes.json` (amendment 3, section 6) |
+| 22 | `scripts/22_fullscale_tests.py` (`--benchmark` first) | full-scale matrices | `h1_mantel.csv`, `h2_partial_mantel.csv`, `h2_mrm.csv`, `per_order.csv`; `reports/week6_performance.md` |
+| 23 | `scripts/23_posterior_fullscale.py` (`--trees-only` to cache) | posterior archive, full-scale matrices | `data/interim/mammalia/posterior/*.npy`, `posterior.csv`, `posterior_summary.csv` |
+| 24 | `scripts/24_exploratory_fullscale.py` | full-scale matrices | `exploratory_pageview_quartiles.csv`, `exploratory_nonlinear.csv` |
+| 25 | `scripts/25_week6_figures.py` | the Week 6 tables | `reports/figures/week6/*.png` |
 
 Every script takes `--force` and `--config PATH`. Stages 3, 5 and 11 also take `--offline`, which answers every API request from the cache and fails if a response is missing. Every CSV written gets a `.meta.json` sidecar with its sha256, row count, creation time, and source (for example, the MDD version).
 
@@ -167,6 +177,18 @@ Two analyses planned in section 9 of the amendment and labelled exploratory ever
 ### Report (stage 17)
 
 Stage 17 writes `reports/week5_report.md` from the tables and appends `reports/week5_notes.md` unchanged; edit the notes, not the report. The notes hold the interpretation and the go/no-go for scaling to all mammals, which rests on the timings in `reports/tables/scaling_benchmark.csv` (`scripts/18_scaling_benchmark.py`, run by hand; it times the Mantel code on random matrices of 5,911 species and the embedding models on this machine).
+
+## Week 6: the full-scale analysis (all mammals)
+
+Run with `--clade mammalia`. The order is: stages 1–3, `03b_residual_rules.py`, 4, 5, 5b, `19_freeze_species.py --candidate` (review), then `19_freeze_species.py` (commit the list before anything else), 6, 7, 10 (`--accept-residual`), 11, 20, `22_fullscale_tests.py --benchmark`, 21 (replication, before any full-scale result is read), 22, 23, 24, 25. Stage 7 refuses to change the frozen order at full scale. The full-scale overlay restricts the embeddings to the four registered specifications (`clades.mammalia.embedding.combos`) and uses the full-scale masking rules (Change 2).
+
+### Permutation tests at full scale (`src/lineage_charisma/condensed.py`)
+
+The full-scale code works on condensed upper-triangle vectors. Each matrix is ranked once; each permutation gathers the permuted vector through an int32 index array and multiplies it by every fixed vector in one float32 product, on a thread pool. Permutations are drawn in chunks from one generator, so results do not depend on chunk size or thread count. Tests that permute the same matrix on the same species share one pass, and 999-permutation tests reuse the first 999 permutations of a 9,999-permutation pass. `tests/test_condensed.py` checks all of this against the square-matrix code in `stats.py`, which remains the reference. Patristic distances (`phylo.cophenetic_matrix`) are a vectorized form of dendropy's calculation and are bit-identical to it.
+
+### Optional cluster run
+
+`scripts/slurm/embed_adroit.sh` runs stage 6 on a Princeton Adroit GPU node. The Week 6 run did not need it: embeddings took under 4 minutes per specification on the local Apple GPU.
 
 ## Outputs of stage 3
 

@@ -73,15 +73,34 @@ def relabel_tips(tree: dendropy.Tree, mapping: Mapping[str, str]) -> dendropy.Tr
 
 
 def cophenetic_matrix(tree: dendropy.Tree) -> pd.DataFrame:
-    pdm = tree.phylogenetic_distance_matrix()
-    taxa = sorted((leaf.taxon for leaf in tree.leaf_node_iter()), key=lambda t: t.label)
-    labels = [t.label for t in taxa]
-    n = len(taxa)
-    mat = np.zeros((n, n))
-    for i in range(n):
-        for j in range(i + 1, n):
-            d = pdm.patristic_distance(taxa[i], taxa[j])
-            mat[i, j] = mat[j, i] = d
+    """Patristic distances between all tips, labelled and sorted by tip label.
+
+    Vectorized form of dendropy's PhylogeneticDistanceMatrix.compile_from_tree with the same
+    additions in the same order, so the values are bit-identical to dendropy's (tests/test_phylo.py);
+    the pairwise Python loop took hours at the scale of all mammals.
+    """
+    leaves = list(tree.leaf_node_iter())
+    labels = sorted(leaf.taxon.label for leaf in leaves)
+    index = {label: i for i, label in enumerate(labels)}
+    mat = np.zeros((len(labels), len(labels)))
+    below: dict[int, tuple[np.ndarray, np.ndarray]] = {}   # node id -> (tip indices, path length from each tip up to the node)
+    for node in tree.postorder_node_iter():
+        children = node.child_nodes()
+        if not children:
+            below[id(node)] = (np.array([index[node.taxon.label]]), np.zeros(1))
+            continue
+        tips, lengths = [], []
+        for k, c1 in enumerate(children):
+            tips1, len1 = below.pop(id(c1))
+            up1 = len1 + (c1.edge.length or 0.0)
+            for c2 in children[k + 1:]:
+                tips2, len2 = below[id(c2)]
+                block = (up1[:, None] + len2[None, :]) + (c2.edge.length or 0.0)
+                mat[np.ix_(tips1, tips2)] = block
+                mat[np.ix_(tips2, tips1)] = block.T
+            tips.append(tips1)
+            lengths.append(up1)
+        below[id(node)] = (np.concatenate(tips), np.concatenate(lengths))
     return pd.DataFrame(mat, index=labels, columns=labels)
 
 

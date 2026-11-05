@@ -1,0 +1,21 @@
+trait,group,type,source,source_column,n_missing,missing_rate
+diet_inv,diet,continuous,elton,Diet-Inv,420,0.09108653220559532
+diet_vend,diet,continuous,elton,Diet-Vend,420,0.09108653220559532
+diet_vect,diet,continuous,elton,Diet-Vect,420,0.09108653220559532
+diet_vfish,diet,continuous,elton,Diet-Vfish,420,0.09108653220559532
+diet_vunk,diet,continuous,elton,Diet-Vunk,420,0.09108653220559532
+diet_scav,diet,continuous,elton,Diet-Scav,420,0.09108653220559532
+diet_fruit,diet,continuous,elton,Diet-Fruit,420,0.09108653220559532
+diet_nect,diet,continuous,elton,Diet-Nect,420,0.09108653220559532
+diet_seed,diet,continuous,elton,Diet-Seed,420,0.09108653220559532
+diet_planto,diet,continuous,elton,Diet-PlantO,420,0.09108653220559532
+foraging_stratum,foraging stratum,categorical,elton,ForStrat-Value,420,0.09108653220559532
+activity_nocturnal,activity time,binary,elton,Activity-Nocturnal,420,0.09108653220559532
+activity_crepuscular,activity time,binary,elton,Activity-Crepuscular,420,0.09108653220559532
+activity_diurnal,activity time,binary,elton,Activity-Diurnal,420,0.09108653220559532
+habitat_breadth,habitat breadth,continuous,combine,habitat_breadth_n,241,0.0522663196703535
+terrestrial,terrestrial or aquatic,binary,combine,terrestrial_non-volant,92,0.019952288006939926
+marine,terrestrial or aquatic,binary,combine,marine,92,0.019952288006939926
+freshwater,terrestrial or aquatic,binary,combine,freshwater,92,0.019952288006939926
+volant,terrestrial or aquatic,binary,combine,terrestrial_volant,92,0.019952288006939926
+log_body_mass,body mass,continuous,combine,adult_mass_g,164,0.03556712209932769

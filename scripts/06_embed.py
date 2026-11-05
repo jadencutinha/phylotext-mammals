@@ -37,7 +37,8 @@ def main() -> None:
 
     for model_name in models:
         todo = []
-        for mask, rule in [(k, r) for k in masks for r in rules]:
+        wanted = set(cfg.combos())
+        for mask, rule in [(k, r) for k in masks for r in rules if (model_name, r, k) in wanted]:
             paths = embedding_paths(cfg.embeddings_dir(), model_name, rule, mask)
             params = {"model": model_name, "rule": rule, "mask_level": mask, "max_tokens_config": ecfg.get("max_tokens"), "corpus_sha256": corpus_sha}
             if rule == "chunk":

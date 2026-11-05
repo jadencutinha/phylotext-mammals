@@ -1,0 +1,22 @@
+{
+  "file": "posterior_summary.csv",
+  "sha256": "0d395624c3e9de1d75feef9fa7eb8671afa76d28734bce978e56e39e4853d98b",
+  "bytes": 619,
+  "created_utc": "2026-11-05T19:19:41+00:00",
+  "rows": 5,
+  "columns": [
+    "statistic",
+    "median",
+    "p2.5",
+    "p97.5",
+    "min",
+    "max",
+    "n_trees"
+  ],
+  "n_trees": 20,
+  "permutations": 999,
+  "h1_p_below_alpha": 0.0,
+  "rule_a_holds": 0.0,
+  "rule_b_holds": 0.2,
+  "note": "with 20 trees the 2.5th and 97.5th percentiles are interpolated between the two most extreme trees"
+}

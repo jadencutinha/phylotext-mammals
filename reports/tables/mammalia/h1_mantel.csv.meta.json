@@ -1,0 +1,25 @@
+{
+  "file": "h1_mantel.csv",
+  "sha256": "f6592a8925c4aa164c3fc9f05273827aee297d7b7e2562d8a752b277f75040c4",
+  "bytes": 619,
+  "created_utc": "2026-11-05T18:33:44+00:00",
+  "rows": 5,
+  "columns": [
+    "analysis",
+    "model",
+    "rule",
+    "mask",
+    "method",
+    "r",
+    "p",
+    "n_species",
+    "n_pairs",
+    "permutations",
+    "is_primary"
+  ],
+  "seed": 20261004,
+  "alternative": "greater",
+  "permuted": "phylogeny",
+  "n_species": 4611,
+  "plan": "docs/preregistration_amendment_fullscale.md"
+}

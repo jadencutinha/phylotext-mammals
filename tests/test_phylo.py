@@ -149,3 +149,20 @@ def test_relabel_does_not_mutate_original(tree):
 
 def test_ultrametric(tree):
     assert is_ultrametric(tree)
+
+
+def test_cophenetic_matrix_is_bit_identical_to_dendropy_on_a_random_tree():
+    import random
+
+    import numpy as np
+    from dendropy.simulate import treesim
+
+    random.seed(4)
+    taxa = dendropy.TaxonNamespace([f"T{i:03d}" for i in range(60)])
+    tree = treesim.birth_death_tree(birth_rate=1.0, death_rate=0.2, taxon_namespace=taxa, num_extant_tips=60, rng=random.Random(4))
+    for edge in tree.postorder_edge_iter():
+        edge.length = None if edge.length is None else edge.length * 3.7   # arbitrary non-dyadic lengths
+    pdm = tree.phylogenetic_distance_matrix()
+    leaves = sorted((leaf.taxon for leaf in tree.leaf_node_iter()), key=lambda t: t.label)
+    reference = np.array([[0.0 if a is b else pdm.patristic_distance(a, b) for b in leaves] for a in leaves])
+    assert np.array_equal(cophenetic_matrix(tree).to_numpy(), reference)

@@ -1,0 +1,27 @@
+{
+  "file": "exploratory_pageview_quartiles.csv",
+  "sha256": "f92f1eb72210d9b8ed39c4a88f42b12e6a8ad66d08810a771ce576b92793b7b0",
+  "bytes": 6790,
+  "created_utc": "2026-11-05T19:22:25+00:00",
+  "rows": 44,
+  "columns": [
+    "status",
+    "group",
+    "n_species",
+    "quartile",
+    "n_pairs",
+    "min_mean_log_pageviews",
+    "max_mean_log_pageviews",
+    "mean_text_distance",
+    "median_text_distance",
+    "mean_phylo_distance",
+    "r_text_phylo",
+    "p"
+  ],
+  "status": "exploratory",
+  "permutations": 999,
+  "seed": 20261004,
+  "alternative": "greater",
+  "permuted": "phylogeny, with the set of pairs held fixed",
+  "text_matrix": "bge-large-en-v1.5 / chunk / strict"
+}

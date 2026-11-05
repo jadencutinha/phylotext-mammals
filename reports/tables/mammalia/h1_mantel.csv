@@ -1,0 +1,6 @@
+analysis,model,rule,mask,method,r,p,n_species,n_pairs,permutations,is_primary
+primary,BAAI/bge-large-en-v1.5,chunk,strict,spearman,-0.028207253535907823,1.0,4611,10628355,9999,True
+variant,sentence-transformers/all-mpnet-base-v2,chunk,strict,spearman,0.000621842101053896,0.444,4611,10628355,999,False
+variant,BAAI/bge-large-en-v1.5,truncate,strict,spearman,-0.025103858811417322,0.999,4611,10628355,999,False
+variant,BAAI/bge-large-en-v1.5,chunk,taxonomy,spearman,0.18611820812341304,0.001,4611,10628355,999,False
+pearson,BAAI/bge-large-en-v1.5,chunk,strict,pearson,-0.022061985625182978,0.984,4611,10628355,999,False

@@ -1,0 +1,11 @@
+analysis,model,rule,mask,ecology_matrix,tree,method,controls,raw_r,raw_p,partial_r,partial_p,share_of_raw,change,n_species,n_pairs,permutations,survives,confounded,is_primary
+primary,BAAI/bge-large-en-v1.5,chunk,strict,ecology,MCC,spearman,ecology + length,-0.028915493187426144,0.9999,-0.03371961258851831,1.0,,0.004804119401092169,4519,10208421,9999,False,,True
+secondary S1,BAAI/bge-large-en-v1.5,chunk,strict,ecology,MCC,spearman,ecology,-0.028915493187426144,0.9999,-0.03303048861041522,1.0,,0.0041149954229890776,4519,10208421,9999,False,,False
+secondary S2,BAAI/bge-large-en-v1.5,chunk,strict,ecology,MCC,spearman,length,-0.028915493187426144,0.9999,-0.029869841468221192,0.9999,,0.0009543482807950476,4519,10208421,9999,False,,False
+secondary S3,BAAI/bge-large-en-v1.5,chunk,strict,ecology,MCC,spearman,pageviews,-0.028915493187426144,0.9999,-0.015385071734101561,0.9721,,-0.013530421453324584,4519,10208421,9999,False,,False
+secondary S4,BAAI/bge-large-en-v1.5,chunk,strict,ecology,MCC,spearman,ecology + length + pageviews,-0.028915493187426144,0.9999,-0.023306857692070942,0.9984,,-0.005608635495355202,4519,10208421,9999,False,,False
+variant,sentence-transformers/all-mpnet-base-v2,chunk,strict,ecology,MCC,spearman,ecology + length,0.0001447541327196569,0.481,-0.011955929223845608,0.943,-82.59473494273543,0.012100683356565264,4519,10208421,999,False,True,False
+variant,BAAI/bge-large-en-v1.5,truncate,strict,ecology,MCC,spearman,ecology + length,-0.025840728045050436,1.0,-0.035475763851058925,1.0,,0.00963503580600849,4519,10208421,999,False,,False
+variant,BAAI/bge-large-en-v1.5,chunk,taxonomy,ecology,MCC,spearman,ecology + length,0.18648314752578582,0.001,0.1624848607448998,0.001,0.8713112305358977,0.02399828678088603,4519,10208421,999,True,False,False
+unweighted_gower,BAAI/bge-large-en-v1.5,chunk,strict,ecology_unweighted,MCC,spearman,ecology + length,-0.028915493187426144,1.0,-0.037727318848370606,1.0,,0.008811825660944461,4519,10208421,999,False,,False
+ecology_without_flight,BAAI/bge-large-en-v1.5,chunk,strict,ecology_no_volant,MCC,spearman,ecology + length,-0.028915493187426144,1.0,-0.031119709936469852,1.0,,0.0022042167490437074,4519,10208421,999,False,,False
