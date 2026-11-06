@@ -23,7 +23,7 @@ def main() -> None:
     parser.add_argument("--sensitivity", action="store_true",
                         help="drop species under matrices.sensitivity_min_tokens instead of the stubs, and write to a separate matrices_min<N>/ directory")
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     mcfg = cfg.get("matrices", {})
     threshold = int(mcfg["sensitivity_min_tokens"]) if args.sensitivity else None
     out_dir, order_path = cfg.matrices_dir(threshold), cfg.species_order_path(threshold)
@@ -58,8 +58,14 @@ def main() -> None:
         print(f"[cache] {len(outputs)} matrices in {out_dir.relative_to(cfg.root)} are up to date, skipping (use --force to rebuild)")
         return
 
-    write_species_order(order_path, order)
-    print(f"[matrices] canonical order: {len(order)} species -> {order_path.relative_to(cfg.root)}")
+    if cfg.output_subdir and not args.sensitivity:
+        # full scale: species_order.txt is frozen and committed before any matrix exists (amendment 3, section 3)
+        if not order_path.exists() or read_species_order(order_path) != order:
+            raise SystemExit(f"[matrices] the non-stub corpus species differ from the frozen {order_path.relative_to(cfg.root)}; nothing written")
+        print(f"[matrices] canonical order: {len(order)} species, matches the frozen {order_path.relative_to(cfg.root)}")
+    else:
+        write_species_order(order_path, order)
+        print(f"[matrices] canonical order: {len(order)} species -> {order_path.relative_to(cfg.root)}")
 
     tree = load_tree(tree_path)
     tips = {leaf.taxon.label for leaf in tree.leaf_node_iter()}

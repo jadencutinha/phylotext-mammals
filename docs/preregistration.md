@@ -128,3 +128,11 @@ The 277-species `matrices_min100/` set stays exploratory.
 ### Amendment 2 (2026-10-09, before any H2 results)
 
 The H2 plan (partial Mantel tests and MRM, decision rules, robustness and exploratory analyses) is in `docs/preregistration_amendment_h2.md`, committed before any of those analyses was run on the project's data.
+
+### Amendment 3 (2026-10-29, before any full-scale results)
+
+The full-scale plan for all mammals (species set, replication check, per-order breakdowns, robustness at full scale and exploratory analyses) is in `docs/preregistration_amendment_fullscale.md`, committed before any full-scale species set, matrix or test existed.
+
+### Amendment 4 (2026-11-05, before any secondary results)
+
+The three secondary analyses (register comparison with Animal Diversity Web, LLM-annotated content charisma, and Bronx Zoo signage) are in `docs/preregistration_amendment_secondary.md`, committed before any ADW page, annotation, hand label or signage existed. They cannot change the H1 or H2 conclusions. The same file fixes a disclosed post-hoc analysis (section D): a length-matched analysis of the full-scale negative r, designed after the Week 6 results and kept separate from the registered outcomes.

@@ -16,7 +16,7 @@ def main() -> None:
     parser = base_parser("Fetch and clean the Wikipedia lead + Description section for each matched species.")
     parser.add_argument("--offline", action="store_true", help="use only cached API responses")
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     wiki_dir = cfg.wiki_dir()
     raw_dir, clean_dir = wiki_dir / "raw", wiki_dir / "clean"
     raw_dir.mkdir(exist_ok=True)

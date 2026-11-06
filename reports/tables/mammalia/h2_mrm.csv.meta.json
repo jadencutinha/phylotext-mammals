@@ -1,0 +1,38 @@
+{
+  "file": "h2_mrm.csv",
+  "sha256": "b74dc69b3e0389cf99e963dd90eb0a45fe88907adc8f465f330371ca1652bb1c",
+  "bytes": 4615,
+  "created_utc": "2026-11-05T18:44:24+00:00",
+  "rows": 24,
+  "columns": [
+    "analysis",
+    "model",
+    "rule",
+    "mask",
+    "ecology_matrix",
+    "predictor",
+    "coef_std",
+    "coef_raw",
+    "t",
+    "p",
+    "r2",
+    "p_r2",
+    "n_species",
+    "n_pairs",
+    "permutations",
+    "is_primary"
+  ],
+  "alternative": "two-sided on pseudo-t",
+  "permuted": "text",
+  "predictors": [
+    "phylogeny",
+    "ecology",
+    "length",
+    "pageviews"
+  ],
+  "seed": 20261004,
+  "alpha": 0.05,
+  "text_matrix": "bge-large-en-v1.5 / chunk / strict",
+  "plan": "docs/preregistration_amendment_fullscale.md",
+  "confounded_share": 0.5
+}

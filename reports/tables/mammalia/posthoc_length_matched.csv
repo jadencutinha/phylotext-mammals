@@ -1,0 +1,2 @@
+status,statistic,n_bins,r_lm,p_two_sided,permutations,seed,n_species,n_within_bin_pairs,null_mean,null_sd,unmatched_h1_r,weighted_different_minus_same,r_lm_5_bins,r_lm_20_bins
+post-hoc,pair-weighted mean within-decile Spearman r,10,0.016588094914339026,0.0245,9999,20261004,4611,1060761,3.7537259362621715e-05,0.007413181541263995,-0.0282072535359078,0.008044776612561363,0.01681096037453805,0.016686831001072287

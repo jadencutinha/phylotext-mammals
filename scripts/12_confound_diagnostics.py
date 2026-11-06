@@ -14,7 +14,7 @@ ATTENTION = {"attention_pageviews": "attention_pageviews.npy", "attention_length
 
 def main() -> None:
     args = base_parser("Marginal Mantel correlations among phylogeny, ecology, attention and the primary text distance.").parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     scfg = cfg["stats"]
     perms, seed, method = int(scfg["permutations"]), int(scfg["seed"]), scfg["method"]
     out_dir, order_path = cfg.matrices_dir(), cfg.species_order_path()

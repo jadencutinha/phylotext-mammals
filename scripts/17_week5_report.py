@@ -36,7 +36,7 @@ def summary(values: pd.Series) -> dict[str, float]:
 
 def main() -> None:
     args = base_parser("Week 5 report: H2 results, robustness, exploratory analyses.").parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     tables, fig_dir, report_path = cfg.tables_dir(), cfg.week5_figures_dir(), cfg.reports / "week5_report.md"
     scfg = cfg["stats"]
     perms, alpha, method = int(scfg["permutations"]), float(scfg["alpha"]), scfg["method"]

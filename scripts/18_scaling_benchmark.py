@@ -36,7 +36,7 @@ def main() -> None:
     parser = base_parser("Time the Mantel machinery and the embedding model at full-mammal size, for the Week 6 scaling decision.")
     parser.add_argument("--skip-embedding", action="store_true", help="do not load the embedding model")
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     perms, ecfg = int(cfg["stats"]["permutations"]), cfg["embedding"]
     rng = np.random.default_rng(0)
     rows = []

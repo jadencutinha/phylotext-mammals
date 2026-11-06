@@ -1,0 +1,16 @@
+{
+  "file": "replication_mask_terms.csv",
+  "sha256": "58fba2f50bc440df644e91e47b1188e418a1ec9cd32af42f03779f867789c552",
+  "bytes": 2686,
+  "created_utc": "2026-11-05T18:29:20+00:00",
+  "rows": 96,
+  "columns": [
+    "term",
+    "direction",
+    "species",
+    "occurrences_pilot",
+    "occurrences_full"
+  ],
+  "level": "strict",
+  "n_texts_changed": 94
+}

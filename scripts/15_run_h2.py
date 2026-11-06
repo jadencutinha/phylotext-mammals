@@ -91,7 +91,7 @@ def main() -> None:
     parser = base_parser("H2: partial Mantel tests and MRM of text distance on phylogeny, ecology and attention.")
     parser.add_argument("--skip-posterior", action="store_true", help="skip the 100 posterior trees (they need the 1.2 GB posterior archive)")
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     apply_style()
     scfg, ecfg = cfg["stats"], cfg["embedding"]
     perms, seed, method, alpha = int(scfg["permutations"]), int(scfg["seed"]), scfg["method"], float(scfg["alpha"])

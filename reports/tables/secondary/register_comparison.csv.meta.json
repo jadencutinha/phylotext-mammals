@@ -1,0 +1,23 @@
+{
+  "file": "register_comparison.csv",
+  "sha256": "3a38f928e82d39217440aae8496d5ac285e19baba2573cbc70b64e81f2aecbc1",
+  "bytes": 374,
+  "created_utc": "2026-11-06T02:53:38+00:00",
+  "rows": 4,
+  "columns": [
+    "status",
+    "test",
+    "source",
+    "r",
+    "p",
+    "n_species",
+    "n_pairs",
+    "median_tokens",
+    "raw_r"
+  ],
+  "status": "secondary (amendment 4, section A)",
+  "spec": "BAAI/bge-large-en-v1.5 / chunk / strict, pilot masks",
+  "permutations": 9999,
+  "seed": 20261004,
+  "source": "Animal Diversity Web text, CC BY-NC-SA 3.0"
+}

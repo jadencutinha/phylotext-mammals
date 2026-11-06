@@ -1,0 +1,26 @@
+{
+  "file": "replication.csv",
+  "sha256": "0e6ace4003d9621b56672da2cb52ad3ec46ab192204037675fde1b3af9217f11",
+  "bytes": 296,
+  "created_utc": "2026-11-05T18:29:20+00:00",
+  "rows": 2,
+  "columns": [
+    "check",
+    "n_species",
+    "n_pairs",
+    "pilot_r",
+    "pilot_p",
+    "r",
+    "p",
+    "difference",
+    "passed"
+  ],
+  "permutations": 9999,
+  "seed": 20261004,
+  "method": "spearman",
+  "spec": [
+    "BAAI/bge-large-en-v1.5",
+    "chunk",
+    "strict"
+  ]
+}

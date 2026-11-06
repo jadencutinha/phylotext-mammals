@@ -1,0 +1,36 @@
+{
+  "file": "posterior.csv",
+  "sha256": "fddd26f292a0f697925f0b25eab22eda4cc74a9858bcaa3886a44918d8918970",
+  "bytes": 4859,
+  "created_utc": "2026-11-05T19:19:41+00:00",
+  "rows": 20,
+  "columns": [
+    "draw",
+    "tree_index",
+    "tree_file",
+    "method",
+    "h1_r",
+    "h1_p",
+    "raw_r",
+    "raw_p",
+    "partial_r",
+    "partial_p",
+    "share_of_raw",
+    "change",
+    "n_species",
+    "h2_n_species",
+    "max_distance_my",
+    "spearman_with_mcc",
+    "survives",
+    "confounded"
+  ],
+  "permutations": 999,
+  "seed": 20261004,
+  "alternative": "greater",
+  "n_trees": 20,
+  "selection": "first 20 of numpy.random.default_rng(20261004).choice(N, size=100, replace=False)",
+  "controls": [
+    "ecology",
+    "length"
+  ]
+}

@@ -70,7 +70,7 @@ def plot_nonlinear(table: pd.DataFrame, path) -> None:
 
 def main() -> None:
     args = base_parser("Exploratory analyses: pairs of well-known species, and transformed phylogenetic distance.").parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     apply_style()
     scfg = cfg["stats"]
     perms, seed = int(scfg["permutations"]), int(scfg["seed"])

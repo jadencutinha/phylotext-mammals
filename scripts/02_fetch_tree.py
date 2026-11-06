@@ -9,7 +9,7 @@ def main() -> None:
     parser = base_parser("Download the Upham et al. 2019 MCC tree and extract target-clade tip labels.")
     parser.add_argument("--posterior", action="store_true", help="also download the full 10k-tree posterior zip (~1.2 GB)")
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     src = cfg["sources"]["tree"]
     tree_path = cfg.tree_path()
     tree_path.parent.mkdir(parents=True, exist_ok=True)
@@ -38,7 +38,8 @@ def main() -> None:
     print(f"[tree] {n_leaves} leaves, {len(tips)} parsed as Genus_species_FAMILY_ORDER")
 
     species = read_csv(cfg.mdd_species_path())
-    orders = sorted(species["order"].dropna().str.upper().unique())
+    # a class-level clade keeps every tip: the tree's order labels differ from MDD's (CETARTIODACTYLA vs Artiodactyla)
+    orders = None if cfg.clade_rank == "class" else sorted(species["order"].dropna().str.upper().unique())
     clade_tips = filter_tips(tips, orders=orders)
     write_csv(tips, all_tips_path, tree_file=tree_path.name)
     write_csv(clade_tips, clade_tips_path, tree_file=tree_path.name, orders=orders)

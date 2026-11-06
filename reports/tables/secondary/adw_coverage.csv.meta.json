@@ -1,0 +1,20 @@
+{
+  "file": "adw_coverage.csv",
+  "sha256": "07c1ea9d965b0ec1aaade2cfcd2c2fa50b041711de5b72dc3617493031fcd676",
+  "bytes": 36391,
+  "created_utc": "2026-11-06T02:50:37+00:00",
+  "rows": 284,
+  "columns": [
+    "species_id",
+    "family",
+    "adw_name",
+    "route",
+    "n_names_tried",
+    "url",
+    "n_tokens",
+    "n_words",
+    "usable"
+  ],
+  "min_tokens": 50,
+  "source": "Animal Diversity Web (animaldiversity.org), CC BY-NC-SA 3.0"
+}

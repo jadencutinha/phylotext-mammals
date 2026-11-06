@@ -1,0 +1,97 @@
+term,direction,species,occurrences_pilot,occurrences_full
+rodents,newly masked,32,0,34
+rabbits,newly masked,9,0,9
+primates,newly masked,7,0,8
+hog,newly masked,7,0,18
+agouti,newly masked,5,0,6
+lagomorphs,newly masked,4,0,4
+deer,newly masked,4,0,4
+orcas,newly masked,4,0,4
+squirrels,newly masked,4,0,4
+whales,newly masked,3,0,3
+hares,newly masked,3,0,3
+horse,newly masked,3,0,3
+cattle,newly masked,3,0,4
+voles,newly masked,3,0,3
+macaques,newly masked,2,0,2
+rodent,newly masked,2,0,2
+gazelle,newly masked,2,0,2
+hare,newly masked,2,0,7
+bat,newly masked,2,0,15
+rats,newly masked,2,0,2
+pig,newly masked,2,0,3
+sloth,newly masked,2,0,12
+nycteris thebaica,newly masked,1,0,1
+opossums,newly masked,1,0,1
+physeter macrocephalus,newly masked,1,0,1
+ounces,unmasked,1,1,0
+neophoca palatina,newly masked,1,0,1
+neophoca,unmasked,1,2,1
+pikas,newly masked,1,0,1
+oryctolagus cuniculus,newly masked,1,0,1
+neblina,unmasked,1,1,0
+orca,newly masked,1,0,1
+rabbit,newly masked,1,0,2
+placental,newly masked,1,0,1
+porcupines,newly masked,1,0,1
+whale,newly masked,1,0,1
+vole,newly masked,1,0,1
+vicuña,newly masked,1,0,1
+venaticus,unmasked,1,1,0
+tropicalis,unmasked,1,1,0
+trivirgata,unmasked,1,1,0
+tenrecs,newly masked,1,0,1
+squirrel,newly masked,1,0,1
+springboks,newly masked,1,0,1
+springbok,newly masked,1,0,1
+spelea,unmasked,1,1,0
+sheep,newly masked,1,0,1
+sack,newly masked,1,0,1
+rhesus,newly masked,1,0,1
+murine,newly masked,1,0,1
+pronghorns,newly masked,1,0,1
+pronghorn,newly masked,1,0,1
+myrmecophagous,newly masked,1,0,1
+adusta,unmasked,1,1,0
+muntjacs,newly masked,1,0,1
+callorhinus,unmasked,1,2,1
+chevrotains,newly masked,1,0,1
+cetacean,newly masked,1,0,1
+cerdocyon comes,newly masked,1,0,1
+cerdocyon,unmasked,1,1,0
+cercopithecine,newly masked,1,0,1
+carcinophaga,unmasked,1,1,0
+camel,newly masked,1,0,1
+callorhinus gilmorei,newly masked,1,0,1
+buffalo,newly masked,1,0,1
+moose,newly masked,1,0,1
+bovine,newly masked,1,0,2
+boars,newly masked,1,0,3
+beluga,newly masked,1,0,1
+barbara,unmasked,1,1,0
+baboons,newly masked,1,0,1
+axis,newly masked,1,0,1
+antelopes,newly masked,1,0,2
+americanus,unmasked,1,1,0
+chimpanzees,newly masked,1,0,1
+cinereoargenteus,unmasked,1,1,0
+cottontail,newly masked,1,0,1
+desman,newly masked,1,0,1
+monkeys,newly masked,1,0,1
+marsupials,newly masked,1,0,1
+marmots,newly masked,1,0,1
+lepus americanus,newly masked,1,0,1
+lemmings,newly masked,1,0,3
+largha,unmasked,1,1,0
+jacobita,unmasked,1,1,0
+itatsi,unmasked,1,1,0
+impala,newly masked,1,0,1
+horses,newly masked,1,0,1
+haplodont,newly masked,1,0,1
+groundhogs,newly masked,1,0,1
+goats,newly masked,1,0,1
+giraffes,newly masked,1,0,1
+gazelles,newly masked,1,0,1
+fasciata,unmasked,1,1,0
+eutherian,newly masked,1,0,1
+margarita,unmasked,1,1,0

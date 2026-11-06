@@ -18,7 +18,7 @@ def main() -> None:
     parser = base_parser("Fetch Wikipedia pageviews and build the attention distance matrices.")
     parser.add_argument("--offline", action="store_true", help="use only cached API responses")
     args = parser.parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     acfg = cfg["attention"]
     start, end = acfg["start"], acfg["end"]
     months = month_range(start, end)

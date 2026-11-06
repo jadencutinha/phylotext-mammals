@@ -31,7 +31,7 @@ def sanity_report(dist, matched, groups: dict, examples: list[str]) -> tuple[lis
 
 def main() -> None:
     args = base_parser("Prune the tree to matched species and compute cophenetic distances.").parse_args()
-    cfg = load_config(args.config)
+    cfg = load_config(args.config, args.clade)
     out_tree = cfg.interim / "tree_pruned.nwk"
     out_tree_mdd = cfg.interim / "tree_pruned_mdd_names.nwk"
     out_dist = cfg.interim / "cophenetic_distance.csv"

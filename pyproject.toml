@@ -22,6 +22,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "scikit-bio>=0.6"]
+annotation = ["anthropic==2.6.0"]   # Week 7 LLM charisma annotation (amendment 4, section B)
 
 [tool.setuptools.packages.find]
 where = ["src"]

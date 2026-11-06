@@ -1,0 +1,17 @@
+{
+  "file": "stubs_by_order.csv",
+  "sha256": "e84a8f7c17008c0a09daff851b669f052d31a431ed0e0d0867c7395ed403eb98",
+  "bytes": 1368,
+  "created_utc": "2026-11-05T17:36:04+00:00",
+  "rows": 27,
+  "columns": [
+    "order",
+    "n_articles",
+    "n_stubs",
+    "median_tokens",
+    "share_with_description_section",
+    "stub_rate"
+  ],
+  "min_tokens": 50,
+  "tokenizer": "BAAI/bge-large-en-v1.5"
+}
