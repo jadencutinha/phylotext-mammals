@@ -1,0 +1,13 @@
+{
+  "file": "adw_coverage_by_family.csv",
+  "sha256": "8aedacb238178c894a1843a77f8cc65e37b7c994ef3c0f0d8b771c4bd6d73c5e",
+  "bytes": 323,
+  "created_utc": "2026-11-06T02:50:37+00:00",
+  "rows": 16,
+  "columns": [
+    "family",
+    "species",
+    "accounts",
+    "usable"
+  ]
+}
