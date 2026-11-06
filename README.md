@@ -234,6 +234,13 @@ The same rule is applied to every species:
 
 There is one requests session with a descriptive User-Agent (`wikipedia.user_agent` in config). Requests are throttled to at most one per `min_interval_seconds`. Titles and Wikidata entities are batched 50 per request, and `maxlag=5` is sent. HTTP 429/5xx responses and `maxlag` errors are retried with exponential backoff, and `Retry-After` is honoured. Every response is cached in `data/interim/api_cache/`, so a live pull happens only once.
 
+Animal Diversity Web (Week 7, register comparison) is fetched at most once every 8 seconds, following its `robots.txt` `Crawl-delay`. It uses the same User-Agent, and every response is cached in `data/raw/adw/`.
+
+## Credits and licences
+
+- **Animal Diversity Web.** Species account text from Animal Diversity Web (Myers, P., R. Espinosa, C. S. Parr, T. Jones, G. S. Hammond and T. A. Dewey, University of Michigan Museum of Zoology, https://animaldiversity.org) is used for the register comparison under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 licence (https://creativecommons.org/licenses/by-nc-sa/3.0/). The full texts are not redistributed in this repository; only derived statistics and short attributed excerpts are. Material derived from ADW text is shared under the same licence.
+- **Wikipedia** text is used under CC BY-SA 4.0; the pageview counts come from the Wikimedia Pageviews API.
+
 ## Layout
 
 ```

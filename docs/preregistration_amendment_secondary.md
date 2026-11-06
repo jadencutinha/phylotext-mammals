@@ -189,4 +189,33 @@ Here r_b is the Spearman correlation (average ranks) between the two distances o
 
 ## 5. Changes
 
-None yet.
+### Change 1 (2026-11-05, before any ADW request, any LLM request, and any hand label)
+
+**What had been seen:** this amendment as committed, and the result of section D (post-hoc, r_LM = 0.0166, two-sided p = 0.0245; `reports/tables/mammalia/posthoc_length_matched.csv`). Also ADW's published terms: its "Conditions of Use" page licenses the site's text under Creative Commons Attribution-NonCommercial-ShareAlike 3.0, and its `robots.txt` sets `Crawl-delay: 8` for all user agents and does not disallow `/accounts/`. No ADW page has been fetched. No model has been called.
+
+**A. ADW retrieval.** This replaces "at most one per second" in section A.
+
+- **Rate:** at most one request every **8 seconds**, following ADW's `robots.txt`.
+- **User-Agent:** the project's existing contact string, `lineage-or-charisma/0.1 (https://github.com/jadencutinha/phylotext-mammals; Princeton COS398 research)`.
+- **Caching:** every response, including misses, is cached under `data/raw/adw/`. A rerun reads the cache and never re-requests a cached page.
+- **Licence handling:** ADW text is used under CC BY-NC-SA 3.0. Full ADW texts and pages stay out of the repository (`data/` is not committed). Only derived tables (coverage, statistics) and short attributed excerpts are committed, and the README credits ADW and names the licence.
+
+Nothing else in section A changes.
+
+**B. LLM annotation: provider, model and settings.** These complete the "Model and runs" paragraph of section B.
+
+- **Provider and model:** Anthropic, model **`claude-sonnet-5-5`**, called through the official Python SDK (`anthropic`) with the Messages API. The API key is read from the `ANTHROPIC_API_KEY` environment variable and is never written to a file. Every response's `model` field is cached with it.
+- **Sampling:** this model rejects non-default sampling parameters, so `temperature` cannot be set to 0. Its default sampling is therefore the "most deterministic setting" that section B allows. Run-to-run agreement (section B, validation item 2b) measures the resulting variability.
+- **Thinking:** `thinking: {"type": "between_tools"}`, which turns extended thinking off for these requests (they use no tools). Effort is left at the model default. Each response is a direct rating of the text, not a reasoning trace.
+- **Output:** structured output via `output_config.format` with a JSON schema. The schema has exactly the four keys `warmth`, `anthropomorphism`, `aesthetic` and `human_relevance`, each an integer from 0 to 3, all required, with `additionalProperties: false`. Every response is still validated in code, as section B requires.
+- **Other request settings:** `max_tokens` = 256. The system and user messages are exactly the text in section B.
+- **Refusals:** a response with `stop_reason` `"refusal"` or `"max_tokens"` counts as malformed and is retried under the section B rule (up to 5 retries per run). No fallback to another model is used, so every score comes from the registered model.
+- **Run order:** run 1 for all 284 species, then run 2 for all 284 species, as separate requests (no batching across runs). The two runs are distinct cache entries keyed by run number and species.
+- **Cost:** about 568 requests, estimated at US$1.60, or US$2.60 under pessimistic token and retry assumptions. Spending stops and is reported if the measured cost after run 1 projects above US$10.
+
+**C. Zoo signage: details fixed before any data exist** (`scripts/28_zoo_signage.py`, `src/lineage_charisma/zoo.py`).
+
+- **Several signs for one species:** the species' distinct transcriptions are joined in row order into one text.
+- **Name resolution:** a printed trinomial is read as its binomial. When an exact name matches several MDD species, the current-name match is preferred, then the legacy-name match, then the synonym match. A tie at the same level is listed and excluded.
+- **Masking check:** the pipeline stops if a masked sign still contains its own genus name.
+- **What is committed:** sign transcriptions stay in `data/raw/zoo_signage/` and are not written to report tables. Only names, match outcomes and similarity statistics are.

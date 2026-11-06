@@ -1,0 +1,26 @@
+{
+  "file": "posthoc_length_matched_bins.csv",
+  "sha256": "d5c570e91dbb464cbf1edbc33868ec0dd32a9b1e604e2086a400c2aa5c152233",
+  "bytes": 1525,
+  "created_utc": "2026-11-05T23:59:53+00:00",
+  "rows": 10,
+  "columns": [
+    "status",
+    "bin",
+    "n_species",
+    "n_pairs",
+    "weight",
+    "min_tokens",
+    "max_tokens",
+    "r_spearman",
+    "n_same_order_pairs",
+    "mean_text_same_order",
+    "mean_text_different_order",
+    "different_minus_same"
+  ],
+  "status": "post-hoc, designed after the Week 6 results (docs/preregistration_amendment_secondary.md, section D)",
+  "text_matrix": "bge-large-en-v1.5 / chunk / strict",
+  "permuted": "phylogeny, species permuted within length deciles",
+  "alternative": "two-sided",
+  "seed": 20261004
+}

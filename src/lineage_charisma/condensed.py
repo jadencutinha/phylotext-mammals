@@ -83,6 +83,11 @@ def null_correlations(moving: Prepared, fixed: Sequence[Prepared], permutations:
     Each permutation's statistic is computed on its own (gather the permuted vector, then one float32
     matrix-vector product), so the result does not depend on the chunk size or the number of threads.
     """
+    return correlations_for_permutations(moving, fixed, iter_permutations(moving.n, permutations, seed, chunk_size), permutations, workers)
+
+
+def correlations_for_permutations(moving: Prepared, fixed: Sequence[Prepared], chunks, permutations: int, workers: int | None = None) -> np.ndarray:
+    """As `null_correlations`, for permutations supplied by the caller as an iterable of (chunk x n) int arrays."""
     n = moving.n
     if any(f.n != n for f in fixed):
         raise ValueError("all matrices must have the same number of species")
@@ -91,7 +96,7 @@ def null_correlations(moving: Prepared, fixed: Sequence[Prepared], permutations:
     rows, cols = (a.astype(np.int32) for a in np.triu_indices(n, k=1))
 
     def one(p: np.ndarray) -> np.ndarray:
-        idx = p[rows]
+        idx = p[rows].astype(np.int32)
         idx *= n
         idx += p[cols]
         return stack @ flat.take(idx)
@@ -99,9 +104,11 @@ def null_correlations(moving: Prepared, fixed: Sequence[Prepared], permutations:
     out = np.empty((permutations, len(fixed)))
     done = 0
     with ThreadPoolExecutor(workers or default_workers()) as pool:
-        for chunk in iter_permutations(n, permutations, seed, chunk_size):
+        for chunk in chunks:
             out[done:done + len(chunk)] = np.array(list(pool.map(one, chunk)), dtype=np.float64)
             done += len(chunk)
+    if done != permutations:
+        raise ValueError(f"expected {permutations} permutations, got {done}")
     return out
 
 
