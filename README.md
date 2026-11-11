@@ -2,7 +2,7 @@
 
 Does text-embedding similarity between mammal species descriptions recover the evolutionary tree, or does it mainly reflect human attention and charisma? This repo compares a text-distance matrix (from Wikipedia description embeddings) with a phylogenetic-distance matrix (from the Upham et al. 2019 mammal tree) using Mantel and partial Mantel tests.
 
-**Current state: Week 6. The analysis is pre-registered in [`docs/preregistration.md`](docs/preregistration.md), its H2 amendment [`docs/preregistration_amendment_h2.md`](docs/preregistration_amendment_h2.md), and the full-scale amendment [`docs/preregistration_amendment_fullscale.md`](docs/preregistration_amendment_fullscale.md). H1 and H2 have been run on the Carnivora pilot ([`reports/week4_report.md`](reports/week4_report.md), [`reports/week5_report.md`](reports/week5_report.md)) and on all mammals ([`reports/week6_report.md`](reports/week6_report.md)).** In the pilot the text–phylogeny correlation is small (r = 0.033 on 284 species) and not significant after controlling for ecology and article length (partial r = 0.020, p = 0.13). At full scale (4,611 species) the primary correlation is slightly negative (r = −0.028), so H1 is not supported and H2 rule (a) fails. Within bats, primates and artiodactyls it is clearly positive, and with common-name head nouns left unmasked it is r = 0.19. In both sets, popular species pairs are described more alike and the tree signal is stronger among obscure species.
+**Current state: Week 7. The analysis is pre-registered in [`docs/preregistration.md`](docs/preregistration.md), its H2 amendment [`docs/preregistration_amendment_h2.md`](docs/preregistration_amendment_h2.md), the full-scale amendment [`docs/preregistration_amendment_fullscale.md`](docs/preregistration_amendment_fullscale.md) and the secondary-analyses amendment [`docs/preregistration_amendment_secondary.md`](docs/preregistration_amendment_secondary.md). Every result is listed in [`reports/final_results_index.md`](reports/final_results_index.md). H1 and H2 have been run on the Carnivora pilot ([`reports/week4_report.md`](reports/week4_report.md), [`reports/week5_report.md`](reports/week5_report.md)) and on all mammals ([`reports/week6_report.md`](reports/week6_report.md)).** In the pilot the text–phylogeny correlation is small (r = 0.033 on 284 species) and not significant after controlling for ecology and article length (partial r = 0.020, p = 0.13). At full scale (4,611 species) the primary correlation is slightly negative (r = −0.028), so H1 is not supported and H2 rule (a) fails. Within bats, primates and artiodactyls it is clearly positive, and with common-name head nouns left unmasked it is r = 0.19. In both sets, popular species pairs are described more alike and the tree signal is stronger among obscure species.
 
 The pilot is the default configuration (order Carnivora). Every script also takes `--clade mammalia` (or `make ... CLADE=mammalia`), which deep-merges `clades.mammalia` in `config.yaml` over the defaults and writes to `mammalia/` subdirectories of `data/interim`, `data/processed` and `reports/tables`.
 
@@ -189,6 +189,21 @@ The full-scale code works on condensed upper-triangle vectors. Each matrix is ra
 ### Optional cluster run
 
 `scripts/slurm/embed_adroit.sh` runs stage 6 on a Princeton Adroit GPU node. The Week 6 run did not need it: embeddings took under 4 minutes per specification on the local Apple GPU.
+
+## Week 7: secondary analyses (amendment 4)
+
+| stage | script | output |
+|---|---|---|
+| 26 | `scripts/26_length_matched.py` (post-hoc, section D) | `reports/tables/mammalia/posthoc_length_matched*.csv` |
+| 27 | `scripts/27_annotation_sheet.py` | `data/interim/annotation_validation.csv`, `annotation_instructions.md`, `annotation_validation_key.csv` |
+| 28 | `scripts/28_zoo_signage.py [--input CSV]` | `reports/tables/secondary/zoo_*.csv`; needs `data/raw/zoo_signage/signage.csv` in the format of `template.csv` |
+| 29 | `scripts/29_fetch_adw.py` (one request per 8 s; about 3 hours uncached) | `data/raw/adw/pages/`, `data/interim/adw/adw_texts.csv` (not committed), `reports/tables/secondary/adw_coverage*.csv` |
+| 30 | `scripts/30_register_comparison.py` | `register_comparison.csv`, `register_bootstrap.csv`, `reports/figures/week7/register_comparison.png` |
+| 31 | `scripts/31_annotate.py --run 1`, then `--run 2` | `data/interim/annotation/`; refuses to call the model until the hand labels are committed; needs `ANTHROPIC_API_KEY` and `pip install -e .[annotation]` |
+| 32 | `scripts/32_charisma_analysis.py` | `charisma_agreement.csv`, `charisma_tests.csv`, `charisma_mrm.csv`, `data/processed/matrices/charisma_content.npy` |
+| 33 | `scripts/33_results_index.py` | `reports/final_results_index.md` (rerun after any result changes) |
+
+The Week 8 figure plan, including which figures need regenerating at publication quality, is in `reports/week8_figure_plan.md`.
 
 ## Outputs of stage 3
 
