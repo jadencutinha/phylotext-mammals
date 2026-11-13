@@ -46,7 +46,15 @@ def apply_style() -> None:
 
 
 def save(fig, path) -> None:
-    fig.savefig(path, dpi=200, bbox_inches="tight")
+    fig.savefig(path, dpi=300, bbox_inches="tight")
+    plt.close(fig)
+
+
+def save_final(fig, stem) -> None:
+    """Publication export (week 8): a 300 dpi PNG and a PDF with embedded TrueType fonts, from one figure."""
+    with plt.rc_context({"pdf.fonttype": 42}):
+        for suffix in (".png", ".pdf"):
+            fig.savefig(stem.with_suffix(suffix), dpi=300, bbox_inches="tight")
     plt.close(fig)
 
 

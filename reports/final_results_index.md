@@ -4,6 +4,8 @@ Every pre-registered result, the replication checks and the one disclosed post-h
 
 Counts: primary 4, secondary 24, robustness 49, exploratory 23, check 2, post-hoc 1.
 
+**Locked 2026-11-11 (week 8).** After this date analysis code changes only for bug fixes, each reported. Every number below is read from the table in its source column; the numbers quoted in the reports, README and amendments are checked against the same tables by `scripts/34_verify_numbers.py` (`reports/number_check.md`).
+
 ## Pilot H1
 
 | result | role | spec | n | statistic | p | perms | decision | source |
@@ -159,10 +161,10 @@ Counts: primary 4, secondary 24, robustness 49, exploratory 23, check 2, post-ho
 
 | result | role | spec | n | statistic | p | perms | decision | source |
 |---|---|---|---:|---|---:|---:|---|---|
-| Agreement, drop rule, B1–B3 | secondary | claude-sonnet-5-5 |  | pending |  |  | pending: waiting for hand labels | `docs/preregistration_amendment_secondary.md` |
+| Agreement, drop rule, B1–B3 | secondary | claude-sonnet-5-5 |  | placeholder |  |  | pending: hand labels not yet committed; no model request sent | `docs/preregistration_amendment_secondary.md` |
 
 ## Secondary C: zoo signage
 
 | result | role | spec | n | statistic | p | perms | decision | source |
 |---|---|---|---:|---|---:|---:|---|---|
-| Cross-register similarity; H1 on overlap | secondary | descriptive |  | pending |  |  | pending: no signage collected yet | `scripts/28_zoo_signage.py` |
+| Cross-register similarity; H1 on overlap | secondary | descriptive |  | not run |  |  | built and tested (tests/test_zoo.py, 3 fake rows), not run: no signage data collected; moved to future work | `scripts/28_zoo_signage.py` |

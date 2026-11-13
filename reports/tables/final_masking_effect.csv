@@ -1,0 +1,13 @@
+status,model,rule,mask,nn_same_family,chance_same_family,h1_r,h1_p,n_species
+"descriptive (week 3 sanity check, recomputed)",BAAI/bge-large-en-v1.5,chunk,none,0.897887323943662,0.11441795650226448,0.2043487470509198,0.0001,284
+"descriptive (week 3 sanity check, recomputed)",BAAI/bge-large-en-v1.5,chunk,taxonomy,0.8732394366197183,0.11441795650226448,0.2148370199441613,0.0001,284
+"descriptive (week 3 sanity check, recomputed)",BAAI/bge-large-en-v1.5,chunk,strict,0.44014084507042256,0.11441795650226448,0.0327058622748151,0.0285,284
+"descriptive (week 3 sanity check, recomputed)",BAAI/bge-large-en-v1.5,truncate,none,0.9014084507042254,0.11441795650226448,0.251901322791809,0.0001,284
+"descriptive (week 3 sanity check, recomputed)",BAAI/bge-large-en-v1.5,truncate,taxonomy,0.8908450704225352,0.11441795650226448,0.2576522369916161,0.0001,284
+"descriptive (week 3 sanity check, recomputed)",BAAI/bge-large-en-v1.5,truncate,strict,0.43309859154929575,0.11441795650226448,0.064076764562755,0.0001,284
+"descriptive (week 3 sanity check, recomputed)",sentence-transformers/all-mpnet-base-v2,chunk,none,0.926056338028169,0.11441795650226448,0.3580129386073917,0.0001,284
+"descriptive (week 3 sanity check, recomputed)",sentence-transformers/all-mpnet-base-v2,chunk,taxonomy,0.9084507042253521,0.11441795650226448,0.3551597741397563,0.0001,284
+"descriptive (week 3 sanity check, recomputed)",sentence-transformers/all-mpnet-base-v2,chunk,strict,0.4507042253521127,0.11441795650226448,0.082995072158274,0.0001,284
+"descriptive (week 3 sanity check, recomputed)",sentence-transformers/all-mpnet-base-v2,truncate,none,0.9295774647887324,0.11441795650226448,0.373484117512703,0.0001,284
+"descriptive (week 3 sanity check, recomputed)",sentence-transformers/all-mpnet-base-v2,truncate,taxonomy,0.9154929577464789,0.11441795650226448,0.3778398067317823,0.0001,284
+"descriptive (week 3 sanity check, recomputed)",sentence-transformers/all-mpnet-base-v2,truncate,strict,0.4612676056338028,0.11441795650226448,0.1091603601259076,0.0001,284
