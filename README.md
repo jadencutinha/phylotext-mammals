@@ -2,16 +2,36 @@
 
 Does text-embedding similarity between mammal species descriptions recover the evolutionary tree, or does it mainly reflect human attention and charisma? This repo compares a text-distance matrix (from Wikipedia description embeddings) with a phylogenetic-distance matrix (from the Upham et al. 2019 mammal tree) using Mantel and partial Mantel tests.
 
-**Current state: Week 7. The analysis is pre-registered in [`docs/preregistration.md`](docs/preregistration.md), its H2 amendment [`docs/preregistration_amendment_h2.md`](docs/preregistration_amendment_h2.md), the full-scale amendment [`docs/preregistration_amendment_fullscale.md`](docs/preregistration_amendment_fullscale.md) and the secondary-analyses amendment [`docs/preregistration_amendment_secondary.md`](docs/preregistration_amendment_secondary.md). Every result is listed in [`reports/final_results_index.md`](reports/final_results_index.md). H1 and H2 have been run on the Carnivora pilot ([`reports/week4_report.md`](reports/week4_report.md), [`reports/week5_report.md`](reports/week5_report.md)) and on all mammals ([`reports/week6_report.md`](reports/week6_report.md)).** In the pilot the text–phylogeny correlation is small (r = 0.033 on 284 species) and not significant after controlling for ecology and article length (partial r = 0.020, p = 0.13). At full scale (4,611 species) the primary correlation is slightly negative (r = −0.028), so H1 is not supported and H2 rule (a) fails. Within bats, primates and artiodactyls it is clearly positive, and with common-name head nouns left unmasked it is r = 0.19. In both sets, popular species pairs are described more alike and the tree signal is stronger among obscure species.
+**Current state: Week 8, results locked 2026-11-11 (analysis B pending the hand labels; analysis C not run). The analysis is pre-registered in [`docs/preregistration.md`](docs/preregistration.md), its H2 amendment [`docs/preregistration_amendment_h2.md`](docs/preregistration_amendment_h2.md), the full-scale amendment [`docs/preregistration_amendment_fullscale.md`](docs/preregistration_amendment_fullscale.md) and the secondary-analyses amendment [`docs/preregistration_amendment_secondary.md`](docs/preregistration_amendment_secondary.md). Every result is listed in [`reports/final_results_index.md`](reports/final_results_index.md). H1 and H2 have been run on the Carnivora pilot ([`reports/week4_report.md`](reports/week4_report.md), [`reports/week5_report.md`](reports/week5_report.md)) and on all mammals ([`reports/week6_report.md`](reports/week6_report.md)).** In the pilot the text–phylogeny correlation is small (r = 0.033 on 284 species) and not significant after controlling for ecology and article length (partial r = 0.020, p = 0.13). At full scale (4,611 species) the primary correlation is slightly negative (r = −0.028), so H1 is not supported and H2 rule (a) fails. Within bats, primates and artiodactyls it is clearly positive, and with common-name head nouns left unmasked it is r = 0.19. In both sets, popular species pairs are described more alike and the tree signal is stronger among obscure species.
 
 The pilot is the default configuration (order Carnivora). Every script also takes `--clade mammalia` (or `make ... CLADE=mammalia`), which deep-merges `clades.mammalia` in `config.yaml` over the defaults and writes to `mammalia/` subdirectories of `data/interim`, `data/processed` and `reports/tables`.
+
+## Results at a glance
+
+- **Every result**, with its role (primary, secondary, robustness, exploratory, post-hoc), specification, statistic, p-value or interval, decision-rule outcome and source table: [`reports/final_results_index.md`](reports/final_results_index.md).
+- **Number check**: every headline number quoted in the reports, the README and the amendments, re-derived from the saved tables: [`reports/number_check.md`](reports/number_check.md). It found one known erratum, a diagnostic (0.442 should read 0.441), which affects no test.
+- **Final figures** (300 dpi PNG and PDF) and draft captions: [`reports/figures/final/`](reports/figures/final/), [`captions.md`](reports/figures/final/captions.md).
+
+| | pilot (284 Carnivora) | full scale (4,611 mammals) |
+|---|---|---|
+| H1, Mantel r (primary spec, MCC tree) | 0.033, p = 0.0285: **supported** | −0.028, p = 1.0: **not supported** |
+| H2, partial r given ecology + length | 0.020, p = 0.127: rules (a) and (b) not met | −0.034, p = 1.0: rule (a) not met, rule (b) undefined |
+| within orders (descriptive) | | positive in Artiodactyla 0.283, Chiroptera 0.214, Lagomorpha 0.143, Primates 0.139; near 0 in Rodentia and Eulipotyphla |
+| post-hoc D, length-matched | | r_LM = +0.017, two-sided p = 0.025 |
+| secondary A, ADW − Wikipedia (246 species) | Δ H1 = +0.056 [+0.019, +0.095] | |
+| secondary B (LLM charisma) | pending: hand labels not yet committed | |
+| secondary C (zoo signage) | built and tested, not run (no data); future work | |
+
+Supporting material for the write-up: [`reports/final_facts.md`](reports/final_facts.md) (verified facts by paper section, with the pre-registration history), [`reports/methods_parameters.md`](reports/methods_parameters.md), [`reports/limitations_inventory.md`](reports/limitations_inventory.md) and [`reports/slide_outline.md`](reports/slide_outline.md).
 
 ## Setup
 
 ```bash
-make setup          # creates .venv and installs the package + pytest
+make setup-locked   # the exact environment that produced the results: Python 3.12.10 and requirements.lock
+make setup          # or: a fresh .venv with the package's loose dependency ranges + pytest
 make test           # runs the unit tests (no network needed)
-make all            # runs every stage; each stage skips work whose output is cached
+make all            # reproduces every result: pilot, full scale, post-hoc D and secondary A, then the final lock and figures
+make all OFFLINE=1  # the same, answering every Wikipedia, Wikidata, pageview and ADW request from the caches (fails on a miss)
 make week2          # stages 1-5 only (data foundation)
 make week3          # stages 5b-8 only (corpus, embeddings, matrices, sanity report)
 make week4          # stages 9-13 only (H1 Mantel tests, ecology, attention, diagnostics, report)
@@ -19,9 +39,24 @@ make week5          # stages 15-17 (H2 partial Mantel and MRM, exploratory analy
 make all FORCE=1    # rebuilds every stage, including the downloads and API pulls
 ```
 
-Python 3.11+ is required. Dependencies: requests, dendropy, rapidfuzz, pandas, pyyaml, numpy, pyarrow, sentence-transformers (which brings PyTorch), matplotlib, scipy (plus pytest and scikit-bio for dev; scikit-bio is used only to cross-check the Mantel test).
+The results were produced with Python 3.12.10 on macOS arm64 (Apple M3 Pro); `requirements.lock` pins every package version (`pip freeze` of that environment, including the dev and annotation extras). `pyproject.toml` keeps loose ranges and requires Python 3.11+. Dependencies: requests, dendropy, rapidfuzz, pandas, pyyaml, numpy, pyarrow, sentence-transformers (which brings PyTorch), matplotlib, scipy (plus pytest and scikit-bio for dev; scikit-bio is used only to cross-check the Mantel test).
 
 The first `make embed` downloads the two embedding models from the Hugging Face hub (about 1.3 GB and 0.4 GB) and the first `make corpus` downloads one tokenizer file. Both are free and need no account. Everything after that runs offline from the caches.
+
+## Run order and what each step needs
+
+`make all` runs these in order. Each stage skips work whose output is cached, so a rerun from a populated `data/` directory reads the caches. The frozen full-scale species list is never overwritten: stages 19 and 07 stop if it would change.
+
+| order | make target | scripts | needs network | needs | time (measured) |
+|---|---|---|---|---|---|
+| 1 | `pilot` (`week2` to `week5`, `posterior-h1`) | 01–17 on Carnivora | first run only: MDD, tree, Wikipedia, Wikidata, pageviews, figshare traits, Hugging Face models; `OFFLINE=1` afterwards | `make posterior` (1.2 GB posterior archive, downloaded once) | the 100 pruned posterior trees take about 8 min to build and are then cached; whole stage not timed end to end |
+| 2 | `fullscale` | 01–07, 03b, 19, 10, 11, 20–25 with `--clade mammalia` | as above, first run only | the posterior archive; about 3 GB of disk for matrices | pooled H1/H2/MRM passes about 38 min projected on an 8-thread M3 Pro CPU, plus per-order, posterior and exploratory tests (`reports/week6_performance.md`); not timed end to end |
+| 3 | `secondary` | 26 (post-hoc D), 29 (ADW), 30 (register comparison) | ADW on the first run only: one request per 8 s, about 3 h; `OFFLINE=1` afterwards | | not timed |
+| 4 | `final` | 33 (results index), 34 (number check), 35 (final figures) | no | | about 10 s |
+| not in `all` | `charisma` | 31 (`--run 1`, then `--run 2`), 32 | Anthropic API | `ANTHROPIC_API_KEY`; the 50 hand labels committed; `pip install -e .[annotation]` (in `requirements.lock`); about US$1.60 | about 20 min estimated; responses cached |
+| not in `all` | `zoo` | 28 | no | `data/raw/zoo_signage/signage.csv` | not run |
+
+No step needs Adroit. `scripts/slurm/embed_adroit.sh` is an optional cluster route for the full-scale embeddings, which ran on the laptop's GPU in 84–206 s per specification. After the charisma or zoo step, rerun `make final` to fill their rows and draw figure 10.
 
 ## Pipeline
 
@@ -203,7 +238,22 @@ The full-scale code works on condensed upper-triangle vectors. Each matrix is ra
 | 32 | `scripts/32_charisma_analysis.py` | `charisma_agreement.csv`, `charisma_tests.csv`, `charisma_mrm.csv`, `data/processed/matrices/charisma_content.npy` |
 | 33 | `scripts/33_results_index.py` | `reports/final_results_index.md` (rerun after any result changes) |
 
-The Week 8 figure plan, including which figures need regenerating at publication quality, is in `reports/week8_figure_plan.md`.
+`scripts/27_annotation_sheet.py` is a one-time step that has already been run. It never overwrites a sheet that exists, so it is not part of `make all`.
+
+## Week 8: lock, verification and final figures
+
+| stage | script | output |
+|---|---|---|
+| 33 | `scripts/33_results_index.py` | `reports/final_results_index.md` |
+| 34 | `scripts/34_verify_numbers.py` | `reports/number_check.md`. It re-derives every headline number quoted in the reports, README and amendments from the saved tables, recomputes the Week 6 same-order diagnostics from the full-scale matrices, lists any untraced numbers, and exits non-zero on any mismatch that is not a recorded erratum. |
+| 35 | `scripts/35_final_figures.py` | `reports/figures/final/fig01`–`fig09` (`fig10` once analysis B has run) as 300 dpi PNG and PDF, plus `reports/tables/final_masking_effect.csv` |
+
+`make final` runs all three. The figures share one style, set in `src/lineage_charisma/plotstyle.py` (`save_final`):
+- Helvetica Neue, 9 pt, 7.2 in wide;
+- blue for the pilot, orange for the full scale, grey for reference values;
+- filled markers for p < 0.05 and hollow markers for p ≥ 0.05, so no reading depends on colour alone.
+
+The palette was checked under simulated colour-vision deficiency. The figure plan written in Week 7 is in `reports/week8_figure_plan.md`.
 
 ## Outputs of stage 3
 
@@ -277,9 +327,11 @@ src/lineage_charisma/
   posterior.py              the pre-registered draw of posterior trees and their cached distance matrices
   h2.py                     the H2 species subset, models and decision rules
   plotstyle.py              one palette and figure style for every report
-scripts/01..18_*.py         one script per pipeline stage
+scripts/01..35_*.py         one script per pipeline stage (03b, 05b included); see the run-order table
 tests/                      unit tests (no network or model needed); tests/fixtures holds saved API responses
-reports/                    weekN reports (generated), weekN_notes.md (hand-written), figures/, tables/
-docs/                       pre-registration and its H2 amendment, ecology trait notes
+reports/                    weekN reports, final_results_index.md, number_check.md, final_facts.md, methods_parameters.md,
+                            limitations_inventory.md, slide_outline.md, figures/ (final/ for publication), tables/
+docs/                       pre-registration and its amendments 2-4, ecology trait notes
+requirements.lock           pinned package versions of the environment that produced the results
 data/                       gitignored: raw/, interim/, processed/
 ```

@@ -1,0 +1,20 @@
+{
+  "file": "final_masking_effect.csv",
+  "sha256": "474c1c73fe4003ac3d54849d6a54788eeb16485f0b030916a37cb2a02fb8b7aa",
+  "bytes": 2029,
+  "created_utc": "2026-11-11T23:18:46+00:00",
+  "rows": 12,
+  "columns": [
+    "status",
+    "model",
+    "rule",
+    "mask",
+    "nn_same_family",
+    "chance_same_family",
+    "h1_r",
+    "h1_p",
+    "n_species"
+  ],
+  "source": "pilot text matrices and reports/tables/h1_mantel.csv",
+  "k": 1
+}

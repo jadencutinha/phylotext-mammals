@@ -151,12 +151,21 @@ def main() -> None:
             add("Secondary B: charisma", r["test"], "secondary", "claude-sonnet-5-5, retained dimensions", int(r["n_species"]), f"partial r = {fmt(r['r'])}",
                 r["p"], 9999, ("explains beyond attention" if r.get("explains_beyond_attention") else "") if r["test"].startswith("B1") else "",
                 s / "charisma_tests.csv")
+        if (s / "charisma_mrm.csv").exists():
+            for _, r in pd.read_csv(s / "charisma_mrm.csv").iterrows():
+                add("Secondary B: charisma", f"B3 extended MRM coefficient: {r['predictor']}", "secondary", "claude-sonnet-5-5, descriptive",
+                    int(r["n_species"]), f"β = {fmt(r['coef_std'])} (R² = {fmt(r['r2'], 4)})", r["p"], 9999, "descriptive (two-sided)", s / "charisma_mrm.csv")
     else:
-        add("Secondary B: charisma", "Agreement, drop rule, B1–B3", "secondary", "claude-sonnet-5-5", "", "pending", None, "", "pending: waiting for hand labels",
-            cfg.root / "docs" / "preregistration_amendment_secondary.md")
-    add("Secondary C: zoo signage", "Cross-register similarity; H1 on overlap", "secondary", "descriptive", "",
-        "pending" if not (s / "zoo_summary.json").exists() else "see zoo_summary.json", None, "", "pending: no signage collected yet",
-        (s / "zoo_summary.json") if (s / "zoo_summary.json").exists() else cfg.root / "scripts" / "28_zoo_signage.py")
+        add("Secondary B: charisma", "Agreement, drop rule, B1–B3", "secondary", "claude-sonnet-5-5", "", "placeholder", None, "",
+            "pending: hand labels not yet committed; no model request sent", cfg.root / "docs" / "preregistration_amendment_secondary.md")
+    if (s / "zoo_summary.json").exists():
+        add("Secondary C: zoo signage", "Cross-register similarity; H1 on overlap", "secondary", "descriptive", "", "see zoo_summary.json", None, "", "",
+            s / "zoo_summary.json")
+    else:
+        # amendment 4, section C: no signage was collected, so nothing is simulated; the pipeline is tested on 3 fake rows only
+        add("Secondary C: zoo signage", "Cross-register similarity; H1 on overlap", "secondary", "descriptive", "", "not run", None, "",
+            "built and tested (tests/test_zoo.py, 3 fake rows), not run: no signage data collected; moved to future work",
+            cfg.root / "scripts" / "28_zoo_signage.py")
 
     table = pd.DataFrame(rows)
     counts = table["role"].value_counts().reindex(ROLE_ORDER).fillna(0).astype(int)
@@ -166,7 +175,10 @@ def main() -> None:
              "(registered tests that cannot change the H1/H2 conclusions), **robustness** (registered one-at-a-time variants), **exploratory** "
              "(registered, labelled exploratory or descriptive), **check** (registered replication checks), and **post-hoc** (designed after seeing "
              "the data, disclosed in amendment 4, section D). p-values are one-sided unless the decision column says otherwise; MRM p-values are two-sided.",
-             "", "Counts: " + ", ".join(f"{k} {v}" for k, v in counts.items()) + ".", ""]
+             "", "Counts: " + ", ".join(f"{k} {v}" for k, v in counts.items()) + ".", "",
+             "**Locked 2026-11-11 (week 8).** After this date analysis code changes only for bug fixes, each reported. Every number below is "
+             "read from the table in its source column; the numbers quoted in the reports, README and amendments are checked against the "
+             "same tables by `scripts/34_verify_numbers.py` (`reports/number_check.md`).", ""]
     for group, sub in table.groupby("group", sort=False):
         lines += [f"## {group}", "", "| result | role | spec | n | statistic | p | perms | decision | source |", "|---|---|---|---:|---|---:|---:|---|---|"]
         for _, r in sub.iterrows():
