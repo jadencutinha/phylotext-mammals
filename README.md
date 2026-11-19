@@ -9,7 +9,7 @@ The pilot is the default configuration (order Carnivora). Every script also take
 ## Results at a glance
 
 - **Every result**, with its role (primary, secondary, robustness, exploratory, post-hoc), specification, statistic, p-value or interval, decision-rule outcome and source table: [`reports/final_results_index.md`](reports/final_results_index.md).
-- **Number check**: every headline number quoted in the reports, the README and the amendments, re-derived from the saved tables: [`reports/number_check.md`](reports/number_check.md). It found one known erratum, a diagnostic (0.442 should read 0.441), which affects no test.
+- **Number check**: every headline number quoted in the reports, the README and the amendments, re-derived from the saved tables: [`reports/number_check.md`](reports/number_check.md). It found one erratum, a diagnostic (0.442 should read 0.441), which affects no test. The Week 6 report was corrected on 2026-11-19 with a dated note; Amendment 4 keeps its committed text.
 - **Final figures** (300 dpi PNG and PDF) and draft captions: [`reports/figures/final/`](reports/figures/final/), [`captions.md`](reports/figures/final/captions.md).
 
 | | pilot (284 Carnivora) | full scale (4,611 mammals) |
@@ -54,7 +54,8 @@ The first `make embed` downloads the two embedding models from the Hugging Face 
 | 3 | `secondary` | 26 (post-hoc D), 29 (ADW), 30 (register comparison) | ADW on the first run only: one request per 8 s, about 3 h; `OFFLINE=1` afterwards | | not timed |
 | 4 | `final` | 33 (results index), 34 (number check), 35 (final figures) | no | | about 10 s |
 | not in `all` | `charisma` | 31 (`--run 1`, then `--run 2`), 32 | Anthropic API | `ANTHROPIC_API_KEY`; the 50 hand labels committed; `pip install -e .[annotation]` (in `requirements.lock`); about US$1.60 | about 20 min estimated; responses cached |
-| not in `all` | `zoo` | 28 | no | `data/raw/zoo_signage/signage.csv` | not run |
+| not in `all` | `zoo` | 28 | no | `data/raw/zoo_signage/signage.csv` (field checklist: `data/raw/zoo_signage/field_checklist.md`) | not run |
+| not in `all` | `extensions` | 36 (commercial embeddings), 37 (TF-IDF), 38 (section groups) | OpenAI and Voyage APIs (36 only) | Amendment 5 committed; `OPENAI_API_KEY`, `VOYAGE_API_KEY`; `pip install -e .[extensions]`; about US$0.47 (`make api-estimate` prints the estimate and sends nothing) | not run |
 
 No step needs Adroit. `scripts/slurm/embed_adroit.sh` is an optional cluster route for the full-scale embeddings, which ran on the laptop's GPU in 84–206 s per specification. After the charisma or zoo step, rerun `make final` to fill their rows and draw figure 10.
 
@@ -254,6 +255,18 @@ The full-scale code works on condensed upper-triangle vectors. Each matrix is ra
 - filled markers for p < 0.05 and hollow markers for p ≥ 0.05, so no reading depends on colour alone.
 
 The palette was checked under simulated colour-vision deficiency. The figure plan written in Week 7 is in `reports/week8_figure_plan.md`.
+
+### Extension analyses (Amendment 5, designed after the lock)
+
+[`docs/preregistration_amendment_extensions.md`](docs/preregistration_amendment_extensions.md) adds three secondary analyses, designed after the main results were locked. None of them can change an H1 or H2 conclusion.
+
+| stage | script | analysis |
+|---|---|---|
+| 36 | `scripts/36_api_embeddings.py` | A: primary H1 and H2 at both scales with OpenAI `text-embedding-3-large` and Voyage `voyage-3-large`. With no flag it prints the cost estimate only; `--embed` sends the requests (cached); `--test` runs the tests from the cache. |
+| 37 | `scripts/37_tfidf_baseline.py` | B: the same tests on TF-IDF vectors of the strict-masked texts. |
+| 38 | `scripts/38_section_groups.py` | C: H1 per section group (appearance, behavior, distribution/habitat, diet, other), descriptive. `--map-only` writes the heading-to-group table and nothing else. |
+
+Shared code is in `src/lineage_charisma/extensions.py` and the tests are in `tests/test_extensions.py`. Each script stops before computing any statistic, and 36 before sending any request, unless the amendment is committed and unchanged.
 
 ## Outputs of stage 3
 

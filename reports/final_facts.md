@@ -271,7 +271,7 @@ Source: `reports/tables/mammalia/per_order.csv`.
 
 **Diagnostic, not registered:**
 - Under strict masking, same-order pairs average a text distance of 0.412 against 0.403 for different-order pairs. Under taxonomy masking the figures are 0.401 against 0.441.
-- The Week 6 report and Amendment 4 print the second taxonomy value as 0.442; this is a known erratum.
+- The Week 6 report and Amendment 4 printed the second taxonomy value as 0.442. The Week 6 report was corrected on 2026-11-19 with a dated erratum note; Amendment 4 keeps its committed text.
 
 Source: recomputed by `scripts/34_verify_numbers.py`.
 
