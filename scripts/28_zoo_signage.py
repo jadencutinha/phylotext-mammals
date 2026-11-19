@@ -10,11 +10,13 @@ from lineage_charisma import zoo
 from lineage_charisma.config import base_parser, load_config
 from lineage_charisma.distances import cosine_distance_matrix, load_matrix, phylo_matrix_path, text_matrix_path
 from lineage_charisma.embed import SentenceTransformerEncoder, embed_texts, embedding_paths, load_embeddings, read_species_order
+from lineage_charisma.extensions import amendment_is_committed
 from lineage_charisma.io_utils import read_csv, write_csv, write_json
 from lineage_charisma.masking import PILOT_NAME_RANKS, Masker, build_vocabulary, term_leaks
 from lineage_charisma.stats import mantel, submatrix
 
-# docs/preregistration_amendment_secondary.md, section C: descriptive only; runs end to end once signage.csv has rows
+# docs/preregistration_amendment_secondary.md, section C: descriptive only; runs end to end once signage.csv has rows.
+# Signs with no printed scientific name are matched by common name (docs/preregistration_amendment_extensions.md, section D).
 PERMS = 999
 
 
@@ -55,16 +57,24 @@ def main() -> None:
         raise SystemExit(f"{source} not found: copy data/raw/zoo_signage/template.csv to signage.csv and add one row per sign")
 
     signs = zoo.read_signage(source)
-    usable = signs[(signs["transcription"] != "") & (signs["species_scientific"] != "")]
-    print(f"[zoo] {len(signs)} rows in {source.name}; {len(signs) - len(usable)} without a transcription or scientific name are skipped")
+    usable = signs[(signs["transcription"] != "") & ((signs["species_scientific"] != "") | (signs["species_common"] != ""))]
+    print(f"[zoo] {len(signs)} rows in {source.name}; {len(signs) - len(usable)} without a transcription or any printed name are skipped")
+    if (usable["species_scientific"] == "").any():
+        committed, why = amendment_is_committed(root)
+        if not committed:
+            raise SystemExit(f"[zoo] some signs print no scientific name, and the common-name rule needs its amendment: {why}")
     species_table, synonyms = read_csv(cfg.mdd_species_path()), read_csv(cfg.mdd_synonyms_path())
     resolved = zoo.resolve_signage(usable, species_table, synonyms, cfg["matching"])
     table = resolved.drop(columns=["transcription"])     # sign text stays in data/raw; only names and outcomes are written to reports
-    write_csv(table, out_dir / "zoo_resolution.csv", source=source.name, rule="current name, then MDD legacy and synonym names, then fuzzy at the engine thresholds")
+    write_csv(table, out_dir / "zoo_resolution.csv", source=source.name,
+              rule="printed scientific name: current name, then MDD legacy and synonym names, then fuzzy at the engine thresholds; "
+                   "no scientific name printed: exact normalized match to MDD main or other common names (amendment 5, section D)")
     ok = resolved[resolved["resolved"]]
-    print(f"[zoo] resolved {len(ok)} of {len(resolved)} signs to MDD species: {ok['method'].value_counts().to_dict()}")
+    routes = zoo.route_counts(resolved)
+    print(f"[zoo] resolved {len(ok)} of {len(resolved)} signs to MDD species: {ok['method'].value_counts().to_dict()}; {routes}")
     for r in resolved[~resolved["resolved"]].itertuples():
-        print(f"[zoo]   not resolved: row {r.row} {r.species_scientific!r} ({r.method}: {r.note})")
+        printed = r.species_scientific if r.route == zoo.SCIENTIFIC else r.species_common
+        print(f"[zoo]   not resolved: row {r.row} {printed!r} by {r.route} ({r.method}: {r.note})")
     if ok.empty:
         print("[zoo] nothing to analyse")
         return
@@ -109,6 +119,7 @@ def main() -> None:
             res = mantel(cosine_distance_matrix(np.stack([adw_emb[s] for s in with_adw])), submatrix(phylo, overlap, with_adw),
                          permutations=PERMS, seed=int(cfg["stats"]["seed"]))
             h1.append({"register": "adw", "n_species": res.n, "r": res.r, "p": res.p, "permutations": PERMS})
+    summary.update(routes)
     summary["n_in_frozen_set"] = len(overlap)
     summary["h1_computed"] = bool(h1)
 
