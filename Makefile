@@ -11,7 +11,7 @@ FULL = --clade mammalia
 ACCEPT_RESIDUAL ?=
 H2_ARGS ?=
 
-.PHONY: setup-locked all pilot fullscale secondary final charisma zoo lock week2 week3 week4 week5 setup mdd tree reconcile prune wiki corpus embed matrices matrices-sensitivity sanity h1 ecology attention diagnostics report h2 exploratory report5 test posterior posterior-h1 clean-interim clean
+.PHONY: setup-locked all pilot fullscale secondary final charisma zoo extensions api-estimate lock week2 week3 week4 week5 setup mdd tree reconcile prune wiki corpus embed matrices matrices-sensitivity sanity h1 ecology attention diagnostics report h2 exploratory report5 test posterior posterior-h1 clean-interim clean
 
 # Every result, in the order it was produced. With OFFLINE=1 the API stages read their caches only and fail on a miss.
 # Needs the posterior archive (make posterior) for the pilot H2 and full-scale posterior trees. Analysis B (make charisma) needs
@@ -139,6 +139,17 @@ charisma:
 # Secondary C: needs the transcribed signs
 zoo:
 	$(PYTHON) scripts/28_zoo_signage.py
+
+# Amendment 5 (designed after the lock; docs/preregistration_amendment_extensions.md): every script refuses to compute a statistic,
+# and 36 to send a request, until the amendment is committed. 36 needs OPENAI_API_KEY and VOYAGE_API_KEY; `make api-estimate` prints the
+# cost from local token counts and sends nothing.
+api-estimate:
+	$(PYTHON) scripts/36_api_embeddings.py
+
+extensions:
+	$(PYTHON) scripts/36_api_embeddings.py --embed --test
+	$(PYTHON) scripts/37_tfidf_baseline.py
+	$(PYTHON) scripts/38_section_groups.py
 
 # Week 8 lock: results index, number check against the tables, publication figures
 final: lock

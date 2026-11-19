@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping, Sequence
@@ -10,14 +12,18 @@ from rapidfuzz import fuzz
 
 from lineage_charisma.taxonomy import build_candidate_index, normalize_name, synonym_lookup
 
-# docs/preregistration_amendment_secondary.md, section C (descriptive only)
+# docs/preregistration_amendment_secondary.md, section C (descriptive only); the common-name route for signs with no printed
+# scientific name is docs/preregistration_amendment_extensions.md, section D
 TEMPLATE_COLUMNS = ["species_common", "species_scientific", "exhibit", "photo_filename", "transcription", "notes"]
 SOURCE_ORDER = {"exact": 0, "legacy_name": 1, "synonym": 2}
 MIN_H1_SPECIES = 10
+COMMON_NAME_COLUMNS = ("common_name", "other_common_names")
+SCIENTIFIC, COMMON = "scientific name", "common name"
+_DASHES = re.compile("[\u002d\u2010-\u2015\u2212]")
 
 
 def read_signage(path: Path) -> pd.DataFrame:
-    """Read a transcription sheet in the template format; rows without a transcription or a scientific name are dropped and counted."""
+    """Read a transcription sheet in the template format, with every field stripped and whitespace in transcriptions collapsed."""
     df = pd.read_csv(path, dtype=str, keep_default_na=False)
     missing = [c for c in TEMPLATE_COLUMNS if c not in df.columns]
     if missing:
@@ -67,12 +73,62 @@ def resolve_name(printed: str, lookup: Mapping[str, set[str]], sources: Mapping[
     return Resolution(None, status, cand, round(best, 1), f"best fuzzy candidate {cand!r} at {best:.1f}, runner-up {second:.1f}")
 
 
+def normalize_common_name(name: str) -> str:
+    """Amendment 5, section D: lowercase, hyphens and dashes to spaces, other non-letter/digit/space characters deleted, spaces collapsed.
+    Accents are letters and are kept."""
+    t = _DASHES.sub(" ", name.lower())
+    t = "".join(ch for ch in t if ch.isalnum() or ch.isspace())
+    return " ".join(t.split())
+
+
+def common_name_index(species: pd.DataFrame) -> dict[str, set[str]]:
+    """Normalized MDD main and other common names -> the species carrying them (other names are `|`-separated)."""
+    index: dict[str, set[str]] = defaultdict(set)
+    for row in species[["species", *COMMON_NAME_COLUMNS]].itertuples(index=False):
+        names = [row.common_name] if isinstance(row.common_name, str) else []
+        names += row.other_common_names.split("|") if isinstance(row.other_common_names, str) else []
+        for name in names:
+            key = normalize_common_name(name)
+            if key:
+                index[key].add(row.species)
+    return dict(index)
+
+
+def resolve_common_name(printed: str, index: Mapping[str, set[str]]) -> Resolution:
+    """Exact match after normalization; a name carried by several species is ambiguous, with no precedence between main and other names."""
+    key = normalize_common_name(printed)
+    hits = sorted(index.get(key, set()))
+    if len(hits) == 1:
+        return Resolution(hits[0], "common_name", key, 100.0, "")
+    if hits:
+        return Resolution(None, "ambiguous_common_name", key, None, f"{printed!r} is a common name of several MDD species: {hits}")
+    return Resolution(None, "no_common_name_match", key, None, f"{printed!r} equals no MDD common name after normalization")
+
+
 def resolve_signage(signs: pd.DataFrame, species: pd.DataFrame, synonyms: pd.DataFrame | None, matching: Mapping[str, float]) -> pd.DataFrame:
+    """Each row by its printed scientific name; a row with none printed by its printed common name (amendment 5, section D)."""
     lookup, sources = name_index(species, synonyms)
-    rows = [vars(resolve_name(p, lookup, sources, matching)) for p in signs["species_scientific"]]
+    common = common_name_index(species) if (signs["species_scientific"] == "").any() else {}
+    rows = []
+    for sci, com in zip(signs["species_scientific"], signs["species_common"]):
+        if sci:
+            rows.append({**vars(resolve_name(sci, lookup, sources, matching)), "route": SCIENTIFIC})
+        else:
+            rows.append({**vars(resolve_common_name(com, common)), "route": COMMON})
     out = pd.concat([signs.reset_index(drop=True), pd.DataFrame(rows).rename(columns={"species": "species_id"})], axis=1)
     out["resolved"] = out["species_id"].notna()
     return out
+
+
+def route_counts(resolved: pd.DataFrame) -> dict[str, int]:
+    """Amendment 5, section D: signed species matched by each route, and the common-name rows excluded."""
+    ok = resolved[resolved["resolved"]]
+    by_species = ok.groupby("species_id")["route"].agg(lambda r: SCIENTIFIC if SCIENTIFIC in set(r) else COMMON)
+    com = resolved[resolved["route"] == COMMON]
+    return {"n_species_by_scientific_name": int((by_species == SCIENTIFIC).sum()),
+            "n_species_by_common_name": int((by_species == COMMON).sum()),
+            "n_common_name_rows_ambiguous": int((com["method"] == "ambiguous_common_name").sum()),
+            "n_common_name_rows_no_match": int((com["method"] == "no_common_name_match").sum())}
 
 
 def cosine(a: np.ndarray, b: np.ndarray) -> float:
