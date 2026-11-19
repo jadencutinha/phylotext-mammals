@@ -91,6 +91,6 @@ This file lists every limitation stated in the pre-registration, its amendments 
 
 ## Reporting
 
-27. *(week 8)* **One known numeric erratum.** The Week 6 report §1 and Amendment 4 §2 give the taxonomy-mask different-order mean text distance as 0.442. Recomputed from the matrices it is 0.44147, which rounds to 0.441. The committed text is left unchanged, and the correction is recorded in `scripts/34_verify_numbers.py` and `reports/number_check.md`. It does not affect any test.
+27. *(week 8)* **One known numeric erratum.** The Week 6 report §1 and Amendment 4 §2 gave the taxonomy-mask different-order mean text distance as 0.442. Recomputed from the matrices it is 0.44147, which rounds to 0.441. The Week 6 report was corrected on 2026-11-19 with a dated erratum note at that paragraph. Amendment 4 is a timestamped pre-registration document and keeps its committed text; the correction is recorded in `scripts/34_verify_numbers.py` and `reports/number_check.md`. It does not affect any test.
 28. **Some numbers in the weekly notes were computed by hand and are not in result tables.** The Week 3 mask-density check is one example, and so are the Week 6 diagnostics in §1. The Week 6 diagnostics are now recomputed by `scripts/34_verify_numbers.py`; the Week 3 hand checks are not.
     - Sources: `reports/week3_notes.md`; `reports/number_check.md`.

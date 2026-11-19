@@ -123,10 +123,9 @@ def claims(t: Path) -> list[tuple[str, str, str, float]]:
     return out
 
 
-# quoted values found wrong by this check; the committed text is left as it was and the correction is recorded here and in the
-# week 8 report
-ERRATA = {("taxonomy mask, different-order mean text distance", "reports/week6_report.md"): "0.442 should read 0.441 (0.44147)",
-          ("taxonomy mask, different-order mean text distance", "docs/preregistration_amendment_secondary.md"): "0.442 should read 0.441 (0.44147)"}
+# quoted values found wrong by this check and left uncorrected. The week 6 report was corrected in place on 2026-11-19 with a dated
+# erratum note; amendment 4 is a timestamped pre-registration document and keeps its committed text.
+ERRATA = {("taxonomy mask, different-order mean text distance", "docs/preregistration_amendment_secondary.md"): "0.442 should read 0.441 (0.44147)"}
 
 
 def diagnostic_claims(cfg) -> list[tuple[str, str, str, float]]:
