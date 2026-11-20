@@ -1,0 +1,20 @@
+{
+  "file": "charisma_agreement.csv",
+  "sha256": "df905a5656854da63fa22df0cca1a040895705ae5ae678c0b2c59e7d23a66793",
+  "bytes": 596,
+  "created_utc": "2026-11-20T01:36:19+00:00",
+  "rows": 4,
+  "columns": [
+    "status",
+    "dimension",
+    "author_vs_model",
+    "n_validation",
+    "run1_vs_run2",
+    "n_species",
+    "retained",
+    "mean_score",
+    "score_distribution_rounded_mean"
+  ],
+  "floor": 0.5,
+  "dropped_species": []
+}

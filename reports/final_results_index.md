@@ -2,7 +2,7 @@
 
 Every pre-registered result, the replication checks and the one disclosed post-hoc analysis, generated from the result tables by `scripts/33_results_index.py` (rerun it after any table changes). Roles: **primary** (the registered H1 and H2 decisions), **secondary** (registered tests that cannot change the H1/H2 conclusions), **robustness** (registered one-at-a-time variants), **exploratory** (registered, labelled exploratory or descriptive), **check** (registered replication checks), and **post-hoc** (designed after seeing the data, disclosed in amendment 4, section D). p-values are one-sided unless the decision column says otherwise; MRM p-values are two-sided.
 
-Counts: primary 4, secondary 24, robustness 49, exploratory 23, check 2, post-hoc 1.
+Counts: primary 4, secondary 30, robustness 49, exploratory 23, check 2, post-hoc 1.
 
 **Locked 2026-11-11 (week 8).** After this date analysis code changes only for bug fixes, each reported. Every number below is read from the table in its source column; the numbers quoted in the reports, README and amendments are checked against the same tables by `scripts/34_verify_numbers.py` (`reports/number_check.md`).
 
@@ -161,7 +161,13 @@ Counts: primary 4, secondary 24, robustness 49, exploratory 23, check 2, post-ho
 
 | result | role | spec | n | statistic | p | perms | decision | source |
 |---|---|---|---:|---|---:|---:|---|---|
-| Agreement, drop rule, B1–B3 | secondary | claude-sonnet-5-5 |  | placeholder |  |  | pending: hand labels not yet committed; no model request sent | `docs/preregistration_amendment_secondary.md` |
+| B1 text ~ charisma \| length + pageviews | secondary | claude-sonnet-5-5, retained dimensions | 283 | partial r = -0.268 | 1.0000 | 9999 |  | `reports/tables/secondary/charisma_tests.csv` |
+| B2 text ~ phylogeny \| ecology + length + charisma | secondary | claude-sonnet-5-5, retained dimensions | 283 | partial r = 0.029 | 0.0472 | 9999 |  | `reports/tables/secondary/charisma_tests.csv` |
+| B3 extended MRM coefficient: phylogeny | secondary | claude-sonnet-5-5, descriptive | 283 | β = 0.030 (R² = 0.1039) | 0.0811 | 9999 | descriptive (two-sided) | `reports/tables/secondary/charisma_mrm.csv` |
+| B3 extended MRM coefficient: ecology | secondary | claude-sonnet-5-5, descriptive | 283 | β = 0.138 (R² = 0.1039) | 0.0003 | 9999 | descriptive (two-sided) | `reports/tables/secondary/charisma_mrm.csv` |
+| B3 extended MRM coefficient: length | secondary | claude-sonnet-5-5, descriptive | 283 | β = 0.162 (R² = 0.1039) | 0.0001 | 9999 | descriptive (two-sided) | `reports/tables/secondary/charisma_mrm.csv` |
+| B3 extended MRM coefficient: pageviews | secondary | claude-sonnet-5-5, descriptive | 283 | β = -0.032 (R² = 0.1039) | 0.2663 | 9999 | descriptive (two-sided) | `reports/tables/secondary/charisma_mrm.csv` |
+| B3 extended MRM coefficient: charisma | secondary | claude-sonnet-5-5, descriptive | 283 | β = -0.280 (R² = 0.1039) | 0.0001 | 9999 | descriptive (two-sided) | `reports/tables/secondary/charisma_mrm.csv` |
 
 ## Secondary C: zoo signage
 

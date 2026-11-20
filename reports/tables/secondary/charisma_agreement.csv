@@ -1,0 +1,5 @@
+status,dimension,author_vs_model,n_validation,run1_vs_run2,n_species,retained,mean_score,score_distribution_rounded_mean
+secondary,warmth,0.48951038456446444,50,0.8913680989417315,284,False,0.10915492957746478,"{0.0: 256, 1.0: 28}"
+secondary,anthropomorphism,0.6870037653268154,50,0.7888475836431227,284,True,0.0528169014084507,"{0.0: 272, 1.0: 12}"
+secondary,aesthetic,0.6365462876693151,50,0.8807631496436774,284,True,0.1795774647887324,"{0.0: 238, 1.0: 46}"
+secondary,human_relevance,0.9010005792710585,50,0.9710795764836696,284,True,0.7077464788732394,"{0.0: 135, 1.0: 101, 2.0: 45, 3.0: 3}"

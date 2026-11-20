@@ -1,0 +1,32 @@
+{
+  "file": "api_embeddings_tests.csv",
+  "sha256": "616584d547702a36c21b41dd28b996c442f86c2fe2b3f4bc4dc12fe670653623",
+  "bytes": 511,
+  "created_utc": "2026-11-20T04:17:27+00:00",
+  "rows": 2,
+  "columns": [
+    "status",
+    "scale",
+    "provider",
+    "model",
+    "test",
+    "r",
+    "p",
+    "n_species",
+    "n_pairs",
+    "permutations",
+    "outcome",
+    "raw_r",
+    "raw_p",
+    "share_of_raw",
+    "rule_a",
+    "rule_b"
+  ],
+  "status": "secondary (Amendment 5, designed after the 2026-11-11 lock)",
+  "plan": "docs/preregistration_amendment_extensions.md, section A",
+  "permutations": 9999,
+  "seed": 20261004,
+  "alternative": "greater",
+  "permuted": "phylogeny",
+  "texts": "text_strict of the scale's corpus"
+}

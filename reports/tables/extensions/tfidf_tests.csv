@@ -1,0 +1,3 @@
+status,scale,representation,test,r,p,n_species,n_pairs,permutations,outcome,raw_r,raw_p,share_of_raw,rule_a,rule_b
+"secondary (Amendment 5, designed after the 2026-11-11 lock)",pilot,tfidf,H1,0.10009796572136093,0.0001,284,40186,9999,positive,,,,,
+"secondary (Amendment 5, designed after the 2026-11-11 lock)",pilot,tfidf,H2 partial (ecology + length),0.08194333011575612,0.0001,283,39903,9999,,0.10191821433633727,0.0001,0.8040106535357593,survives,not confounded

@@ -209,11 +209,12 @@ def test_client_errors_are_not_retried_and_never_show_the_key(tmp_path, key):
 
     def post(url, headers, body):
         calls.append(1)
-        return 401, {"error": {"message": "invalid key"}}
+        return 401, {"error": {"message": "Incorrect API key provided: sk-proj-****abcd. You can find your API key at ..."}}
 
     with pytest.raises(ApiError) as e:
         ApiEmbedder(PROVIDERS["openai"], tmp_path, post=post, sleep=lambda s: None).embed(["a"], [1])
     assert len(calls) == 1 and "sk-test-secret" not in str(e.value)
+    assert "abcd" not in str(e.value) and "[key redacted]" in str(e.value)    # the provider's masked echo is not passed on either
 
 
 def test_missing_key_sends_nothing(tmp_path, monkeypatch):

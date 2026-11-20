@@ -1,0 +1,3 @@
+status,scale,provider,model,test,r,p,n_species,n_pairs,permutations,outcome,raw_r,raw_p,share_of_raw,rule_a,rule_b
+"secondary (Amendment 5, designed after the 2026-11-11 lock)",pilot,openai,text-embedding-3-large,H1,0.1377003890461433,0.0001,284,40186,9999,positive,,,,,
+"secondary (Amendment 5, designed after the 2026-11-11 lock)",pilot,openai,text-embedding-3-large,H2 partial (ecology + length),0.11127485695426882,0.0001,283,39903,9999,,0.1378785057552362,0.0001,0.8070500644372044,survives,not confounded

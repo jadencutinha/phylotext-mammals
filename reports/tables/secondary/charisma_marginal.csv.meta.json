@@ -1,0 +1,22 @@
+{
+  "file": "charisma_marginal.csv",
+  "sha256": "20e6f08ea7ec830b79342f81ffebbe7acdc1f68c1cceee2b77395805bf967566",
+  "bytes": 149,
+  "created_utc": "2026-11-20T01:36:57+00:00",
+  "rows": 4,
+  "columns": [
+    "with",
+    "r",
+    "p"
+  ],
+  "status": "secondary (amendment 4, section B)",
+  "retained": [
+    "anthropomorphism",
+    "aesthetic",
+    "human_relevance"
+  ],
+  "permutations": 9999,
+  "seed": 20261004,
+  "model": "claude-sonnet-5-5",
+  "alternative": "two-sided (descriptive)"
+}

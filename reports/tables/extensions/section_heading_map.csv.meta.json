@@ -1,0 +1,17 @@
+{
+  "file": "section_heading_map.csv",
+  "sha256": "85a1b36536d566d407b0c3d3c2b0693a1ab71d9a8de31c1cfcaae1ffcce564fc",
+  "bytes": 138637,
+  "created_utc": "2026-11-20T01:53:49+00:00",
+  "rows": 3314,
+  "columns": [
+    "heading",
+    "level",
+    "group",
+    "rule",
+    "count"
+  ],
+  "status": "secondary (Amendment 5, designed after the 2026-11-11 lock)",
+  "plan": "docs/preregistration_amendment_extensions.md, section C",
+  "species": "the 4,611 frozen full-scale species"
+}

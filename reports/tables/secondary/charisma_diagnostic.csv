@@ -1,0 +1,15 @@
+status,section,item,n_pairs,mean_text_distance,mean_charisma_distance,median_tokens_of_pair_members,n_species,median_tokens,spearman_r
+"diagnostic, not pre-registered (requested after analysis B ran)",pair class,both zero on every retained dimension,6670.0,0.34033942631177694,0.0,249.5,,,
+"diagnostic, not pre-registered (requested after analysis B ran)",pair class,"one zero, one not",19372.0,0.3157532207913556,2.3341551063651123,383.0,,,
+"diagnostic, not pre-registered (requested after analysis B ran)",pair class,both non-zero,13861.0,0.2735088350746341,2.136459818333167,555.0,,,
+"diagnostic, not pre-registered (requested after analysis B ran)",species,all-zero species,,,,,116.0,249.5,
+"diagnostic, not pre-registered (requested after analysis B ran)",species,other species,,,,,167.0,555.0,
+"diagnostic, not pre-registered (requested after analysis B ran)",correlation,"raw r(text, charisma), as registered (all 283 H2 species)",39903.0,,,,,,-0.24648910122057274
+"diagnostic, not pre-registered (requested after analysis B ran)",correlation,partial | length difference + pageviews difference (B1 as registered),39903.0,,,,,,-0.2680917676329854
+"diagnostic, not pre-registered (requested after analysis B ran)",correlation,"r(text distance, pair length level)",39903.0,,,,,,-0.6388074490178803
+"diagnostic, not pre-registered (requested after analysis B ran)",correlation,"r(charisma distance, pair length level)",39903.0,,,,,,0.4034329937750708
+"diagnostic, not pre-registered (requested after analysis B ran)",correlation,partial | length difference + pageviews difference + pair length level,39903.0,,,,,,-0.018416882150134522
+"diagnostic, not pre-registered (requested after analysis B ran)",correlation,"raw r, species with >= 100 tokens only (276 species)",37950.0,,,,,,-0.2427077108737363
+"diagnostic, not pre-registered (requested after analysis B ran)",correlation,"partial | length + pageviews difference, species with >= 100 tokens only",37950.0,,,,,,-0.25299962453655345
+"diagnostic, not pre-registered (requested after analysis B ran)",correlation,"raw r, pairs where neither species is all-zero",13861.0,,,,,,-0.17330668058630136
+"diagnostic, not pre-registered (requested after analysis B ran)",correlation,"pair-weighted within-length-decile r (10 equal bins, as post-hoc D)",3864.0,,,,,,0.012765870985905555

@@ -182,7 +182,9 @@ def main() -> None:
     for group, sub in table.groupby("group", sort=False):
         lines += [f"## {group}", "", "| result | role | spec | n | statistic | p | perms | decision | source |", "|---|---|---|---:|---|---:|---:|---|---|"]
         for _, r in sub.iterrows():
-            lines.append(f"| {r['result']} | {r['role']} | {r['spec']} | {r['n']} | {r['statistic']} | {pfmt(r['p'])} | {r['permutations']} | {r['decision']} | `{r['source']}` |")
+            cell = lambda v: str(v).replace("|", "\\|")      # a test name such as "text ~ charisma | length" must not split the cell
+            lines.append(f"| {cell(r['result'])} | {r['role']} | {cell(r['spec'])} | {r['n']} | {cell(r['statistic'])} | {pfmt(r['p'])} | {r['permutations']} | "
+                         f"{cell(r['decision'])} | `{r['source']}` |")
         lines.append("")
     atomic_write_text(cfg.root / "reports" / "final_results_index.md", "\n".join(lines))
     print(f"[index] {len(table)} rows -> reports/final_results_index.md; {counts.to_dict()}")

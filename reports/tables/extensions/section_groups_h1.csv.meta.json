@@ -1,0 +1,31 @@
+{
+  "file": "section_groups_h1.csv",
+  "sha256": "4df0bac7ed849555f5790ba38ed96afb8c7058737bc34466afbdebbc359497f8",
+  "bytes": 1173,
+  "created_utc": "2026-11-20T01:57:47+00:00",
+  "rows": 6,
+  "columns": [
+    "status",
+    "scale",
+    "group",
+    "n_with_section",
+    "n_species",
+    "median_tokens",
+    "r",
+    "p",
+    "n_pairs",
+    "reference_r",
+    "reference_p",
+    "permutations",
+    "note"
+  ],
+  "status": "secondary (Amendment 5, designed after the 2026-11-11 lock)",
+  "plan": "docs/preregistration_amendment_extensions.md, section C",
+  "reading": "descriptive only; p-values for completeness, no multiple-testing claim",
+  "permutations": 9999,
+  "seed": 20261004,
+  "alternative": "greater",
+  "permuted": "phylogeny",
+  "min_tokens": 50,
+  "min_species": 50
+}

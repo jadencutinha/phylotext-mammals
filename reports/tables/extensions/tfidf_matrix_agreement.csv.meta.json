@@ -1,0 +1,14 @@
+{
+  "file": "tfidf_matrix_agreement.csv",
+  "sha256": "adf56f78b55fb21143ab52892e8c352bea97617530df213583b82a9c0d88461f",
+  "bytes": 51,
+  "created_utc": "2026-11-20T01:53:50+00:00",
+  "rows": 1,
+  "columns": [
+    "a",
+    "b",
+    "r"
+  ],
+  "status": "secondary (Amendment 5, designed after the 2026-11-11 lock)",
+  "note": "descriptive Spearman correlation of upper triangles, no p-values"
+}
