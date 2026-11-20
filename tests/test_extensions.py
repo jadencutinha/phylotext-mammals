@@ -217,16 +217,20 @@ def test_client_errors_are_not_retried_and_never_show_the_key(tmp_path, key):
 
 
 def test_missing_key_sends_nothing(tmp_path, monkeypatch):
-    monkeypatch.delenv("VOYAGE_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     api = FakeApi()
-    with pytest.raises(ApiError, match="VOYAGE_API_KEY is not set"):
-        ApiEmbedder(PROVIDERS["voyage"], tmp_path, post=api).embed(["a"], [1])
+    with pytest.raises(ApiError, match="OPENAI_API_KEY is not set"):
+        ApiEmbedder(PROVIDERS["openai"], tmp_path, post=api).embed(["a"], [1])
     assert api.calls == []
 
 
-def test_voyage_request_body():
-    assert PROVIDERS["voyage"].body(["a"]) == {"model": "voyage-3-large", "input": ["a"], "input_type": None, "truncation": False,
-                                               "output_dtype": "float"}
+def test_openai_is_the_only_provider_after_change_1(monkeypatch):
+    assert list(PROVIDERS) == ["openai"] and PROVIDERS["openai"].model == "text-embedding-3-large"
+    doc = AMENDMENT.read_text()
+    change = doc[doc.index("### Change 1"):]
+    assert "2026-11-19" in change and "`text-embedding-3-large` only" in change and "Voyage" in change
+    monkeypatch.delenv("VOYAGE_API_KEY", raising=False)              # analysis A never reads it
+    assert all(p.key_env != "VOYAGE_API_KEY" for p in PROVIDERS.values())
 
 
 def test_long_texts_are_chunked_at_the_provider_limit_and_pooled(tmp_path, key):
@@ -238,9 +242,9 @@ def test_long_texts_are_chunked_at_the_provider_limit_and_pooled(tmp_path, key):
 
 
 def test_cost_estimate():
-    rows = cost_estimate({"pilot": 1_000_000}, PROVIDERS["openai"]) + cost_estimate({"pilot": 1_000_000}, PROVIDERS["voyage"])
-    assert [round(r["usd"], 4) for r in rows] == [0.13, 0.18]
-    assert [round(r["usd_pessimistic"], 4) for r in rows] == [0.26, 0.45]
+    rows = cost_estimate({"pilot": 1_000_000, "full": 2_000_000}, PROVIDERS["openai"])
+    assert [round(r["usd"], 4) for r in rows] == [0.13, 0.26]
+    assert [round(r["usd_pessimistic"], 4) for r in rows] == [0.26, 0.52]
 
 
 # ---------------------------------------------------------------- shared tests
