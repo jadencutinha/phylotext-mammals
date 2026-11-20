@@ -263,17 +263,13 @@ class Provider:
     usd_per_mtok: float        # list price, confirmed before any request (amendment 5, section A)
 
     def body(self, inputs: list[str]) -> dict:
-        if self.name == "openai":
-            return {"model": self.model, "input": inputs, "encoding_format": "float"}
-        return {"model": self.model, "input": inputs, "input_type": None, "truncation": False, "output_dtype": "float"}
+        return {"model": self.model, "input": inputs, "encoding_format": "float"}
 
 
 PROVIDERS = {
     "openai": Provider("openai", "text-embedding-3-large", "https://api.openai.com/v1/embeddings", "OPENAI_API_KEY", 8191, 96, 100_000, 0.13),
-    "voyage": Provider("voyage", "voyage-3-large", "https://api.voyageai.com/v1/embeddings", "VOYAGE_API_KEY", 32_000, 64, 100_000, 0.18),
-}
-VOYAGE_FALLBACK_LIMIT = 16_000    # with cl100k_base standing in for Voyage's tokenizer
-PESSIMISTIC = {"token_factor": 1.25, "retry_factor": 2.0}
+}   # OpenAI only: Voyage was dropped before any request (amendment 5, Change 1)
+PESSIMISTIC = {"retry_factor": 2.0}
 
 
 class Tokenizer:
@@ -284,18 +280,9 @@ class Tokenizer:
 
 
 def provider_tokenizer(provider: Provider) -> tuple[Tokenizer, int]:
-    """(tokenizer, passage limit). Voyage's own tokenizer when it loads, else cl100k_base at the fallback limit."""
+    """(tokenizer, passage limit): OpenAI's cl100k_base at the model's input limit."""
     import tiktoken
 
-    if provider.name == "voyage":
-        try:
-            from tokenizers import Tokenizer as HFTokenizer
-
-            tok = HFTokenizer.from_pretrained(f"voyageai/{provider.model}")
-            return Tokenizer(lambda t: tok.encode(t, add_special_tokens=False).ids, tok.decode, f"voyageai/{provider.model}"), provider.limit
-        except Exception:
-            enc = tiktoken.get_encoding("cl100k_base")
-            return Tokenizer(enc.encode, enc.decode, "cl100k_base (fallback)"), VOYAGE_FALLBACK_LIMIT
     enc = tiktoken.get_encoding("cl100k_base")
     return Tokenizer(enc.encode, enc.decode, "cl100k_base"), provider.limit
 
@@ -401,10 +388,10 @@ def embed_with_provider(texts: Sequence[str], embedder: ApiEmbedder, tokenizer: 
 
 
 def cost_estimate(tokens: Mapping[str, int], provider: Provider) -> list[dict]:
-    """Per scale: list-price cost and a pessimistic bound (more tokens in the provider's tokenizer, every request sent twice)."""
+    """Per scale: list-price cost and a pessimistic bound (every request sent twice). The token counts are exact for cl100k_base."""
     rows = []
     for scale, n in tokens.items():
-        factor = PESSIMISTIC["retry_factor"] * (PESSIMISTIC["token_factor"] if provider.name != "openai" else 1.0)
+        factor = PESSIMISTIC["retry_factor"]
         rows.append({"provider": provider.name, "model": provider.model, "scale": scale, "tokens": int(n),
                      "usd": n / 1e6 * provider.usd_per_mtok, "usd_pessimistic": n * factor / 1e6 * provider.usd_per_mtok})
     return rows

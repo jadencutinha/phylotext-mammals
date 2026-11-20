@@ -51,7 +51,7 @@ def estimate(cfgs) -> None:
     rows = pd.DataFrame([r for p in PROVIDERS.values() for r in cost_estimate(tokens, p)])
     print(rows.to_string(index=False, float_format=lambda x: f"{x:.3f}"))
     print(f"total: US${rows['usd'].sum():.2f} at list prices, US${rows['usd_pessimistic'].sum():.2f} pessimistic "
-          f"(token counts are cl100k_base; Voyage's tokenizer may count differently)")
+          f"(exact cl100k_base token counts)")
     for p in PROVIDERS.values():
         print(f"{p.key_env}: {'set' if os.environ.get(p.key_env) else 'not set'}")
 
@@ -122,8 +122,8 @@ def test(cfgs) -> None:
 def main() -> None:
     from lineage_charisma.config import base_parser
 
-    parser = base_parser("Amendment 5, section A: commercial embeddings (OpenAI, Voyage). Default: print the cost estimate only.")
-    parser.add_argument("--provider", action="append", choices=list(PROVIDERS), help="default: both")
+    parser = base_parser("Amendment 5, section A (and its Change 1): commercial embeddings with OpenAI text-embedding-3-large. Default: print the cost estimate only.")
+    parser.add_argument("--provider", action="append", choices=list(PROVIDERS), help="default: openai, the only provider (amendment 5, Change 1)")
     parser.add_argument("--scale", action="append", choices=list(SCALES), help="default: pilot then full")
     parser.add_argument("--embed", action="store_true", help="send the embedding requests (needs the API keys and the committed amendment)")
     parser.add_argument("--test", action="store_true", help="run the registered tests on the cached embeddings")

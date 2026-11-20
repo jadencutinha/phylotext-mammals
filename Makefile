@@ -141,7 +141,7 @@ zoo:
 	$(PYTHON) scripts/28_zoo_signage.py
 
 # Amendment 5 (designed after the lock; docs/preregistration_amendment_extensions.md): every script refuses to compute a statistic,
-# and 36 to send a request, until the amendment is committed. 36 needs OPENAI_API_KEY and VOYAGE_API_KEY; `make api-estimate` prints the
+# and 36 to send a request, until the amendment is committed. 36 needs OPENAI_API_KEY (Voyage was dropped: amendment 5, Change 1); `make api-estimate` prints the
 # cost from local token counts and sends nothing.
 api-estimate:
 	$(PYTHON) scripts/36_api_embeddings.py

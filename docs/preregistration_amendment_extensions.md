@@ -254,4 +254,19 @@ Everything downstream (one text per species, masking with the full-scale vocabul
 
 ## 5. Changes
 
-(none yet)
+### Change 1 (2026-11-19, before any embedding request to either provider and before any analysis A result)
+
+**What had been seen:** this amendment as committed (`642df33`). Since then, the 50 hand labels for Amendment 4, analysis B have been committed; they do not bear on analysis A. No embedding request had been sent to OpenAI or to Voyage AI: no API cache, embedding or table for analysis A existed.
+
+**Change.** Analysis A uses **OpenAI `text-embedding-3-large` only**. **Voyage AI (`voyage-3-large`) is dropped.** The reason is practical: one fewer provider account. It was decided before any request was sent to either provider and before any analysis A result exists.
+
+What this means for section A, which otherwise stands as written:
+
+- **Models:** the Voyage row of the models table no longer applies. The OpenAI row is unchanged.
+- **Chunking:** the sentence on Voyage's tokenizer and its fallback no longer applies. OpenAI texts are tokenized with `cl100k_base` at the 8,191-token limit, as written.
+- **Requests:** the API key is read from `OPENAI_API_KEY` only. `VOYAGE_API_KEY` is not read.
+- **Tests:** A-H1 and A-H2 are run for the OpenAI model at both scales. The descriptive matrix correlations are among bge-large, mpnet and OpenAI.
+- **Readings:** readings 1–4 and 6 apply to the OpenAI model alone ("both models" in reading 1 now means the one commercial model). Reading 5, on the two commercial models disagreeing with each other, no longer applies.
+- **Cost:** about US$0.20 at list price (1,524,309 `cl100k_base` tokens at US$0.13 per million), or about US$0.40 if every request is sent twice. The US$10 stop rule is unchanged.
+
+**Added limitation:** with one commercial model, analysis A is a single check on encoder dependence. It cannot separate a difference between commercial and open-source encoders from a property of this one model.

@@ -55,7 +55,7 @@ The first `make embed` downloads the two embedding models from the Hugging Face 
 | 4 | `final` | 33 (results index), 34 (number check), 35 (final figures) | no | | about 10 s |
 | not in `all` | `charisma` | 31 (`--run 1`, then `--run 2`), 32 | Anthropic API | `ANTHROPIC_API_KEY`; the 50 hand labels committed; `pip install -e .[annotation]` (in `requirements.lock`); about US$1.60 | about 20 min estimated; responses cached |
 | not in `all` | `zoo` | 28 | no | `data/raw/zoo_signage/signage.csv` (field checklist: `data/raw/zoo_signage/field_checklist.md`) | not run |
-| not in `all` | `extensions` | 36 (commercial embeddings), 37 (TF-IDF), 38 (section groups) | OpenAI and Voyage APIs (36 only) | Amendment 5 committed; `OPENAI_API_KEY`, `VOYAGE_API_KEY`; `pip install -e .[extensions]`; about US$0.47 (`make api-estimate` prints the estimate and sends nothing) | not run |
+| not in `all` | `extensions` | 36 (commercial embeddings), 37 (TF-IDF), 38 (section groups) | OpenAI API (36 only) | Amendment 5 committed; `OPENAI_API_KEY`; `pip install -e .[extensions]`; about US$0.20 (`make api-estimate` prints the estimate and sends nothing) | not run |
 
 No step needs Adroit. `scripts/slurm/embed_adroit.sh` is an optional cluster route for the full-scale embeddings, which ran on the laptop's GPU in 84–206 s per specification. After the charisma or zoo step, rerun `make final` to fill their rows and draw figure 10.
 
@@ -262,7 +262,7 @@ The palette was checked under simulated colour-vision deficiency. The figure pla
 
 | stage | script | analysis |
 |---|---|---|
-| 36 | `scripts/36_api_embeddings.py` | A: primary H1 and H2 at both scales with OpenAI `text-embedding-3-large` and Voyage `voyage-3-large`. With no flag it prints the cost estimate only; `--embed` sends the requests (cached); `--test` runs the tests from the cache. |
+| 36 | `scripts/36_api_embeddings.py` | A: primary H1 and H2 at both scales with OpenAI `text-embedding-3-large` (Voyage was dropped before any request; Amendment 5, Change 1). With no flag it prints the cost estimate only; `--embed` sends the requests (cached); `--test` runs the tests from the cache. |
 | 37 | `scripts/37_tfidf_baseline.py` | B: the same tests on TF-IDF vectors of the strict-masked texts. |
 | 38 | `scripts/38_section_groups.py` | C: H1 per section group (appearance, behavior, distribution/habitat, diet, other), descriptive. `--map-only` writes the heading-to-group table and nothing else. |
 
