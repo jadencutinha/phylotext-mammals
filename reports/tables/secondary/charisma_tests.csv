@@ -1,0 +1,3 @@
+status,test,r,p,raw_r,n_species,explains_beyond_attention,primary_h2_partial_r_same_run,change_from_primary
+secondary,B1 text ~ charisma | length + pageviews,-0.2680917676329854,1.0,-0.24648910122057277,283,False,,
+secondary,B2 text ~ phylogeny | ecology + length + charisma,0.028612339305366215,0.0472,0.03484746990821822,283,,0.020037446245965776,0.00857489305940044

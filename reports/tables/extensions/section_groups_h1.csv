@@ -1,0 +1,7 @@
+status,scale,group,n_with_section,n_species,median_tokens,r,p,n_pairs,reference_r,reference_p,permutations,note
+"secondary (Amendment 5, designed after the 2026-11-11 lock)",pilot,appearance,268,265,273.0,0.0431200056275253,0.0065,34980,0.04309344282837454,0.0073,9999,
+"secondary (Amendment 5, designed after the 2026-11-11 lock)",pilot,behavior,250,240,471.5,0.03585275756423284,0.0314,28680,0.029807852806329565,0.0593,9999,
+"secondary (Amendment 5, designed after the 2026-11-11 lock)",pilot,distribution_habitat,254,247,214.0,0.08979556353631973,0.0001,30381,0.03614671185408525,0.0257,9999,
+"secondary (Amendment 5, designed after the 2026-11-11 lock)",pilot,diet,161,153,341.0,0.03546860313740262,0.1038,11628,-0.027735742697845567,0.806,9999,
+"secondary (Amendment 5, designed after the 2026-11-11 lock)",pilot,other,265,253,527.0,0.05546229158007279,0.001,31878,0.04216889672132995,0.0082,9999,"mixes taxonomy, conservation and human relations"
+"secondary (Amendment 5, designed after the 2026-11-11 lock)",pilot,lead,284,253,159.0,0.059161957510884974,0.0005,31878,0.03313212582009864,0.0355,9999,"reference row: the lead alone, which is part of the corpus text"

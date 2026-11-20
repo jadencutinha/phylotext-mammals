@@ -1,0 +1,27 @@
+{
+  "file": "charisma_tests.csv",
+  "sha256": "bf035d0721f0fefb178bd5b4fec4d9f740c184590c78c29a234333e3c3383863",
+  "bytes": 369,
+  "created_utc": "2026-11-20T01:36:57+00:00",
+  "rows": 2,
+  "columns": [
+    "status",
+    "test",
+    "r",
+    "p",
+    "raw_r",
+    "n_species",
+    "explains_beyond_attention",
+    "primary_h2_partial_r_same_run",
+    "change_from_primary"
+  ],
+  "status": "secondary (amendment 4, section B)",
+  "retained": [
+    "anthropomorphism",
+    "aesthetic",
+    "human_relevance"
+  ],
+  "permutations": 9999,
+  "seed": 20261004,
+  "model": "claude-sonnet-5-5"
+}

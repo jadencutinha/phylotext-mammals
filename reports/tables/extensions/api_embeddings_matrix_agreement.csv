@@ -1,0 +1,4 @@
+a,b,r
+bge-large (primary),mpnet,0.6750473921396407
+bge-large (primary),text-embedding-3-large,0.6492863198410255
+mpnet,text-embedding-3-large,0.6750247316638456

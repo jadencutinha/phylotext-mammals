@@ -1,0 +1,14 @@
+{
+  "file": "api_embeddings_matrix_agreement.csv",
+  "sha256": "4fcce442445389781fe4404a4ddfdedbaab2381676026e0964c51e5632157691",
+  "bytes": 161,
+  "created_utc": "2026-11-20T04:23:45+00:00",
+  "rows": 3,
+  "columns": [
+    "a",
+    "b",
+    "r"
+  ],
+  "status": "secondary (Amendment 5, designed after the 2026-11-11 lock)",
+  "note": "descriptive Spearman correlation of upper triangles, no p-values"
+}

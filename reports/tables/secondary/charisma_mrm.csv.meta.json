@@ -1,0 +1,26 @@
+{
+  "file": "charisma_mrm.csv",
+  "sha256": "72b8fd0d1b1943dafb7fbd97c3f5d2dd1a6aa5a21043245a237a85555e1c5d55",
+  "bytes": 597,
+  "created_utc": "2026-11-20T01:36:57+00:00",
+  "rows": 5,
+  "columns": [
+    "status",
+    "predictor",
+    "coef_std",
+    "t",
+    "p",
+    "r2",
+    "p_r2",
+    "n_species"
+  ],
+  "status": "secondary (amendment 4, section B)",
+  "retained": [
+    "anthropomorphism",
+    "aesthetic",
+    "human_relevance"
+  ],
+  "permutations": 9999,
+  "seed": 20261004,
+  "model": "claude-sonnet-5-5"
+}

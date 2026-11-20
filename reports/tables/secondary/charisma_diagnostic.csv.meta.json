@@ -1,0 +1,31 @@
+{
+  "file": "charisma_diagnostic.csv",
+  "sha256": "ed0ab3afe4592b5a80abc8a8b01655a279a9a307cae5401e3cda98849a056e4c",
+  "bytes": 2333,
+  "created_utc": "2026-11-20T01:52:30+00:00",
+  "rows": 14,
+  "columns": [
+    "status",
+    "section",
+    "item",
+    "n_pairs",
+    "mean_text_distance",
+    "mean_charisma_distance",
+    "median_tokens_of_pair_members",
+    "n_species",
+    "median_tokens",
+    "spearman_r"
+  ],
+  "status": "diagnostic, not pre-registered (requested after analysis B ran)",
+  "retained": [
+    "anthropomorphism",
+    "aesthetic",
+    "human_relevance"
+  ],
+  "matrix_checks": {
+    "max |saved - rebuilt|": 0.0,
+    "max distance between species with identical scores": 0.0,
+    "Spearman r with unstandardized score difference": 0.8984869728773147
+  },
+  "note": "correlations and means only; no p-values; does not change B1-B3"
+}

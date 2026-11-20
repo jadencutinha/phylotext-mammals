@@ -344,7 +344,8 @@ class ApiEmbedder:
             if status == 200:
                 return payload
             if status != 429 and status < 500:
-                raise ApiError(f"{self.provider.name} returned HTTP {status}: {str(payload.get('error', payload))[:300]}")
+                detail = re.sub(r"sk-[\w*-]+", "[key redacted]", str(payload.get("error", payload)))   # providers echo a masked key
+                raise ApiError(f"{self.provider.name} returned HTTP {status}: {detail[:300]}")
             if attempt < self.max_retries:
                 self.sleep(self.backoff * 2 ** attempt)
         raise ApiError(f"{self.provider.name}: no valid response after {self.max_retries} retries (last HTTP {status})")
